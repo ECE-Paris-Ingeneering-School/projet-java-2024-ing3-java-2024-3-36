@@ -5,11 +5,9 @@ import Modele.Objets.Employe;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import Utils.ConnectionDatabase;
 
 public class EmployeDAOImpl implements EmployeDAO {
-    private String jdbcURL = "jdbc:mysql://localhost:3306/projetcinema";
-    private String jdbcUsername = "root";
-    private String jdbcPassword = "";
 
     private static final String INSERT_EMPLOYES_SQL = "INSERT INTO employes" + " (nom, position, email, motDePasse) VALUES " +
             " (?, ?, ?, ?);";
@@ -19,22 +17,9 @@ public class EmployeDAOImpl implements EmployeDAO {
     private static final String DELETE_EMPLOYES_SQL = "delete from employes where id = ?;";
     private static final String UPDATE_EMPLOYES_SQL = "update employes set nom = ?, position = ?, email = ?, motDePasse = ? where id = ?;";
 
-    protected Connection getConnection() {
-        Connection connection = null;
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
-        } catch (SQLException e) {
-            printSQLException(e);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return connection;
-    }
-
     @Override
     public void ajouterEmploye(Employe employe) throws Exception {
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(INSERT_EMPLOYES_SQL)) {
             preparedStatement.setString(1, employe.getNom());
             preparedStatement.setString(2, employe.getPosition());
@@ -51,7 +36,7 @@ public class EmployeDAOImpl implements EmployeDAO {
     @Override
     public Employe trouverEmployeParId(int id) throws Exception {
         Employe employe = null;
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_EMPLOYE_BY_ID)) {
             preparedStatement.setInt(1, id);
             ResultSet rs = preparedStatement.executeQuery();
@@ -73,7 +58,7 @@ public class EmployeDAOImpl implements EmployeDAO {
     @Override
     public List<Employe> listerTousLesEmployes() throws Exception {
         List<Employe> employes = new ArrayList<>();
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_EMPLOYES)) {
             ResultSet rs = preparedStatement.executeQuery();
 
@@ -94,7 +79,7 @@ public class EmployeDAOImpl implements EmployeDAO {
 
     @Override
     public void mettreAJourEmploye(Employe employe) throws Exception {
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement statement = connection.prepareStatement(UPDATE_EMPLOYES_SQL)) {
             statement.setString(1, employe.getNom());
             statement.setString(2, employe.getPosition());
@@ -111,7 +96,7 @@ public class EmployeDAOImpl implements EmployeDAO {
 
     @Override
     public void supprimerEmploye(int id) throws Exception {
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_EMPLOYES_SQL)) {
             statement.setInt(1, id);
 

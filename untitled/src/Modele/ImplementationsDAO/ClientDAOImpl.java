@@ -5,12 +5,8 @@ import Modele.Objets.Client;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
+import Utils.ConnectionDatabase;
 public class ClientDAOImpl implements ClientDAO {
-    private String jdbcURL = "jdbc:mysql://localhost:3306/projetcinema";
-    private String jdbcUsername = "root";
-    private String jdbcPassword = "";
-
     private static final String INSERT_CLIENTS_SQL = "INSERT INTO clients" +
             " (nom, email, type) VALUES (?, ?, ?);";
 
@@ -19,22 +15,10 @@ public class ClientDAOImpl implements ClientDAO {
     private static final String DELETE_CLIENTS_SQL = "delete from clients where id = ?;";
     private static final String UPDATE_CLIENTS_SQL = "update clients set nom = ?, email= ?, type =? where id = ?;";
 
-    protected Connection getConnection() {
-        Connection connection = null;
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
-        } catch (SQLException e) {
-            printSQLException(e);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return connection;
-    }
 
     @Override
     public void ajouterClient(Client client) throws Exception {
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(INSERT_CLIENTS_SQL)) {
             preparedStatement.setString(1, client.getNom());
             preparedStatement.setString(2, client.getEmail());
@@ -48,7 +32,7 @@ public class ClientDAOImpl implements ClientDAO {
     @Override
     public Client trouverClientParId(int id) throws Exception {
         Client client = null;
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_CLIENT_BY_ID)) {
             preparedStatement.setInt(1, id);
             ResultSet rs = preparedStatement.executeQuery();
@@ -68,7 +52,7 @@ public class ClientDAOImpl implements ClientDAO {
     @Override
     public List<Client> listerTousLesClients() throws Exception {
         List<Client> clients = new ArrayList<>();
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_CLIENTS)) {
             ResultSet rs = preparedStatement.executeQuery();
 
@@ -87,7 +71,7 @@ public class ClientDAOImpl implements ClientDAO {
 
     @Override
     public void mettreAJourClient(Client client) throws Exception {
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement statement = connection.prepareStatement(UPDATE_CLIENTS_SQL)) {
             statement.setString(1, client.getNom());
             statement.setString(2, client.getEmail());
@@ -102,7 +86,7 @@ public class ClientDAOImpl implements ClientDAO {
 
     @Override
     public void supprimerClient(int id) throws Exception {
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_CLIENTS_SQL)) {
             statement.setInt(1, id);
             statement.executeUpdate();

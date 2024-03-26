@@ -5,11 +5,9 @@ import Modele.Objets.Billet;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import Utils.ConnectionDatabase;
 
 public class BilletDAOImpl implements BilletDAO {
-    private String jdbcURL = "jdbc:mysql://localhost:3306/projetcinema";
-    private String jdbcUsername = "root";
-    private String jdbcPassword = "";
 
     private static final String INSERT_BILLETS_SQL = "INSERT INTO billets" + " (seanceId, clientId, prix, categorie) VALUES " +
             " (?, ?, ?, ?);";
@@ -19,22 +17,10 @@ public class BilletDAOImpl implements BilletDAO {
     private static final String DELETE_BILLETS_SQL = "DELETE FROM billets WHERE id = ?;";
     private static final String UPDATE_BILLETS_SQL = "UPDATE billets SET seanceId = ?, clientId = ?, prix = ?, categorie = ? WHERE id = ?;";
 
-    protected Connection getConnection() {
-        Connection connection = null;
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
-        } catch (SQLException e) {
-            printSQLException(e);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return connection;
-    }
 
     @Override
     public void ajouterBillet(Billet billet) throws Exception {
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              // Notez l'utilisation de Statement.RETURN_GENERATED_KEYS pour pouvoir récupérer les clés générées
              PreparedStatement preparedStatement = connection.prepareStatement(INSERT_BILLETS_SQL, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1, billet.getSeanceId());
@@ -66,7 +52,7 @@ public class BilletDAOImpl implements BilletDAO {
     @Override
     public Billet trouverBilletParId(int id) throws Exception {
         Billet billet = null;
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_BILLET_BY_ID)) {
             preparedStatement.setInt(1, id);
 
@@ -88,7 +74,7 @@ public class BilletDAOImpl implements BilletDAO {
     @Override
     public List<Billet> listerTousLesBillets() throws Exception {
         List<Billet> billets = new ArrayList<>();
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_BILLETS)) {
             ResultSet rs = preparedStatement.executeQuery();
 
@@ -108,7 +94,7 @@ public class BilletDAOImpl implements BilletDAO {
 
     @Override
     public void mettreAJourBillet(Billet billet) throws Exception {
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement statement = connection.prepareStatement(UPDATE_BILLETS_SQL)) {
             statement.setInt(1, billet.getSeanceId());
             statement.setInt(2, billet.getClientId());
@@ -124,7 +110,7 @@ public class BilletDAOImpl implements BilletDAO {
 
     @Override
     public void supprimerBillet(int id) throws Exception {
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_BILLETS_SQL)) {
             statement.setInt(1, id);
 

@@ -5,11 +5,9 @@ import Modele.Objets.Film;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import Utils.ConnectionDatabase;
 
 public class FilmDAOImpl implements FilmDAO {
-    private String jdbcURL = "jdbc:mysql://localhost:3306/projetcinema"; // Remplacez nom_base_de_donnees par le nom de votre base de données
-    private String jdbcUsername = "root";
-    private String jdbcPassword = ""; // Mot de passe par défaut pour WAMP
 
     private static final String INSERT_FILMS_SQL = "INSERT INTO films" + " (titre, genre, duree, description, realisateur) VALUES " +
             " (?, ?, ?, ?, ?);";
@@ -19,23 +17,10 @@ public class FilmDAOImpl implements FilmDAO {
     private static final String DELETE_FILMS_SQL = "delete from films where id = ?;";
     private static final String UPDATE_FILMS_SQL = "update films set titre = ?, genre= ?, duree =?, description =?, realisateur=? where id = ?;";
 
-    protected Connection getConnection() {
-        Connection connection = null;
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return connection;
-    }
-
     @Override
     public Film recupFilm(int id) {
         Film film = null;
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_FILM_BY_ID);) {
             preparedStatement.setInt(1, id);
             ResultSet rs = preparedStatement.executeQuery();
@@ -57,7 +42,7 @@ public class FilmDAOImpl implements FilmDAO {
     @Override
     public List<Film> recupAllFilms() {
         List<Film> films = new ArrayList<>();
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_FILMS);) {
             ResultSet rs = preparedStatement.executeQuery();
 
@@ -79,7 +64,7 @@ public class FilmDAOImpl implements FilmDAO {
     @Override
     public boolean ajouterFilm(Film film) {
         boolean rowInserted = false;
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(INSERT_FILMS_SQL)) {
             preparedStatement.setString(1, film.getTitre());
             preparedStatement.setString(2, film.getGenre());
@@ -97,7 +82,7 @@ public class FilmDAOImpl implements FilmDAO {
     @Override
     public boolean updateFilm(Film film) {
         boolean rowUpdated = false;
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement statement = connection.prepareStatement(UPDATE_FILMS_SQL);) {
             statement.setString(1, film.getTitre());
             statement.setString(2, film.getGenre());
@@ -116,7 +101,7 @@ public class FilmDAOImpl implements FilmDAO {
     @Override
     public boolean supprimerFilm(int id) {
         boolean rowDeleted = false;
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_FILMS_SQL);) {
             statement.setInt(1, id);
             rowDeleted = statement.executeUpdate() > 0;

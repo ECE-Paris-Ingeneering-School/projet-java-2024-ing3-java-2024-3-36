@@ -5,34 +5,18 @@ import Modele.Objets.Seance;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import Utils.ConnectionDatabase;
 
 public class SeanceDAOImpl implements SeanceDAO {
-    private String jdbcURL = "jdbc:mysql://localhost:3306/projetcinema";
-    private String jdbcUsername = "root";
-    private String jdbcPassword = "";
-
     private static final String INSERT_SEANCES_SQL = "INSERT INTO seances" + " (filmId, heure, salle) VALUES " + " (?, ?, ?);";
     private static final String SELECT_SEANCE_BY_ID = "select id, filmId, heure, salle from seances where id =?";
     private static final String SELECT_ALL_SEANCES = "select * from seances";
     private static final String DELETE_SEANCES_SQL = "delete from seances where id = ?;";
     private static final String UPDATE_SEANCES_SQL = "update seances set filmId = ?, heure = ?, salle =? where id = ?;";
 
-    protected Connection getConnection() {
-        Connection connection = null;
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return connection;
-    }
-
     @Override
     public void ajouterSeance(Seance seance) throws Exception {
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(INSERT_SEANCES_SQL)) {
             preparedStatement.setInt(1, seance.getFilmId());
             preparedStatement.setTimestamp(2, Timestamp.valueOf(seance.getHeure()));
@@ -47,7 +31,7 @@ public class SeanceDAOImpl implements SeanceDAO {
     @Override
     public Seance trouverSeanceParId(int id) throws Exception {
         Seance seance = null;
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_SEANCE_BY_ID);) {
             preparedStatement.setInt(1, id);
             ResultSet rs = preparedStatement.executeQuery();
@@ -67,7 +51,7 @@ public class SeanceDAOImpl implements SeanceDAO {
     @Override
     public List<Seance> listerToutesLesSeances() throws Exception {
         List<Seance> seances = new ArrayList<>();
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_SEANCES);) {
             ResultSet rs = preparedStatement.executeQuery();
 
@@ -86,7 +70,7 @@ public class SeanceDAOImpl implements SeanceDAO {
 
     @Override
     public void mettreAJourSeance(Seance seance) throws Exception {
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement statement = connection.prepareStatement(UPDATE_SEANCES_SQL);) {
             statement.setInt(1, seance.getFilmId());
             statement.setTimestamp(2, Timestamp.valueOf(seance.getHeure()));
@@ -101,7 +85,7 @@ public class SeanceDAOImpl implements SeanceDAO {
 
     @Override
     public void supprimerSeance(int id) throws Exception {
-        try (Connection connection = getConnection();
+        try (Connection connection = ConnectionDatabase.getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_SEANCES_SQL);) {
             statement.setInt(1, id);
 
