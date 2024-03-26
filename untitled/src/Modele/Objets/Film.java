@@ -65,4 +65,17 @@ public class Film {
     public void setRealisateur(String realisateur) {
         this.realisateur = realisateur;
     }
+
+    @Override
+    public String toString() {
+        return "Film{" +
+                "id=" + id +
+                ", titre='" + titre + '\'' +
+                ", genre='" + genre + '\'' +
+                ", duree=" + duree +
+                ", description='" + description + '\'' +
+                ", realisateur='" + realisateur + '\'' +
+                '}';
+    }
+
 }

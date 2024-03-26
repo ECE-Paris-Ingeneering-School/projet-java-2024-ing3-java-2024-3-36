@@ -54,5 +54,16 @@ public class Employe {
     public void setMotDePasse(String motDePasse) {
         this.motDePasse = motDePasse;
     }
+    @Override
+    public String toString() {
+        return "Employe{" +
+                "id=" + id +
+                ", nom='" + nom + '\'' +
+                ", position='" + position + '\'' +
+                ", email='" + email + '\'' +
+                ", motDePasse='" + motDePasse + '\'' +
+                '}';
+    }
+
 }
 

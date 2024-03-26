@@ -44,5 +44,16 @@ public class Client {
     public void setType(String type) {
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        return "Client{" +
+                "id=" + id +
+                ", nom='" + nom + '\'' +
+                ", email='" + email + '\'' +
+                ", type='" + type + '\'' +
+                '}';
+    }
+
 }
 

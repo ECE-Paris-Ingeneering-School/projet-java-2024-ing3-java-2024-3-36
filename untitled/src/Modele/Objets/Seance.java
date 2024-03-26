@@ -46,5 +46,17 @@ public class Seance {
     public void setSalle(String salle) {
         this.salle = salle;
     }
+
+    @Override
+    public String toString() {
+        return "Seance{" +
+                "id=" + id +
+                ", filmId=" + filmId +
+                ", heure=" + heure.toString() + // ou utilisez un formatter si vous voulez un format spécifique
+                ", salle='" + salle + '\'' +
+                '}';
+    }
+
+
 }
 

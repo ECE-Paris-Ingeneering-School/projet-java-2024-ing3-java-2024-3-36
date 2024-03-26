@@ -15,6 +15,9 @@ public class Billet {
         this.categorie = categorie;
     }
 
+
+
+
     public int getId() {
         return id;
     }
@@ -53,6 +56,17 @@ public class Billet {
 
     public void setCategorie(String categorie) {
         this.categorie = categorie;
+    }
+
+    @Override
+    public String toString() {
+        return "Billet{" +
+                "id=" + id +
+                ", seanceId=" + seanceId +
+                ", clientId=" + clientId +
+                ", prix=" + prix +
+                ", categorie='" + categorie + '\'' +
+                '}';
     }
 }
 
