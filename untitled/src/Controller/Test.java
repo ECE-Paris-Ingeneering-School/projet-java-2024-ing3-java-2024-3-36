@@ -26,7 +26,7 @@ public class Test {
             System.out.println("4. Gérer les films");
             System.out.println("5. Gérer les séances");
             System.out.println("6. Quitter");
-            int choice = scanner.nextInt();
+            int choice = scanner.nextInt(); //test
             switch (choice) {
                 case 1:
                     gererBillets(billetDAO,scanner);
