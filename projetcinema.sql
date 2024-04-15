@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : lun. 15 avr. 2024 à 13:40
+-- Généré le : lun. 15 avr. 2024 à 17:34
 -- Version du serveur : 8.0.36
 -- Version de PHP : 7.4.33
 
@@ -59,8 +59,16 @@ CREATE TABLE IF NOT EXISTS `clients` (
   `nom` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `type` varchar(255) NOT NULL,
+  `etat` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table `clients`
+--
+
+INSERT INTO `clients` (`id`, `nom`, `email`, `type`, `etat`) VALUES
+(2, 'Hamza', 'hamza.khan@edu.ece.fr', 'membre', 'enfant');
 
 -- --------------------------------------------------------
 
@@ -124,7 +132,14 @@ CREATE TABLE IF NOT EXISTS `seances` (
   `salle` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `filmId` (`filmId`)
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table `seances`
+--
+
+INSERT INTO `seances` (`id`, `filmId`, `heure`, `salle`) VALUES
+(7, 2, '2024-04-17 14:30:00', '15');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
