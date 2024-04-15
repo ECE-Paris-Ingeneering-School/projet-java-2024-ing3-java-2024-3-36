@@ -30,6 +30,7 @@ public class Test {
         return button;
     }
     public static class PageAccueil extends JFrame implements ActionListener {
+        private final int userID;
         private JButton btnGererBillets;
         private JButton btnGererClients;
         private JButton btnGererEmployes;
@@ -37,13 +38,15 @@ public class Test {
         private JButton btnGererSeances;
         private JButton btnQuitter;
 
-        public PageAccueil() {
+        public PageAccueil(int userID) {
+
+            this.userID = userID;
             setTitle("Page d'Accueil");
 
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
             // Création des boutons
-            btnGererBillets = createStyledButton("Gérer les billets");
+            btnGererBillets = createStyledButton("Gérer mes billets");
             btnGererBillets.addActionListener(this);
 
             btnGererClients = createStyledButton("Gérer les clients");
@@ -64,10 +67,10 @@ public class Test {
             // Ajout des boutons au conteneur
             JPanel buttonPanel = new JPanel(new GridLayout(1, 5));
             buttonPanel.add(btnGererBillets);
-            buttonPanel.add(btnGererClients);
-            buttonPanel.add(btnGererEmployes);
-            buttonPanel.add(btnGererFilms);
-            buttonPanel.add(btnGererSeances);
+            //buttonPanel.add(btnGererClients);
+            //buttonPanel.add(btnGererEmployes);
+            //buttonPanel.add(btnGererFilms);
+            //buttonPanel.add(btnGererSeances);
             buttonPanel.add(btnQuitter);
             buttonPanel.setBackground(Color.LIGHT_GRAY);
             // Ajout du panel de boutons en haut de la fenêtre
@@ -82,65 +85,67 @@ public class Test {
 
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == btnGererBillets) {
-                new GererBilletsPage(billetDAO, scanner);
+                new GererBilletsPage(billetDAO, scanner, userID);
             } else if (e.getSource() == btnGererClients) {
-                new GererClientsPage(clientDAO, scanner);
+                new GererClientsPage(clientDAO, scanner, userID);
             } else if (e.getSource() == btnGererEmployes) {
-                new GererEmployesPage(employeDAO, scanner);
+                new GererEmployesPage(employeDAO, scanner, userID);
             } else if (e.getSource() == btnGererFilms) {
-                new GererFilmsPage(filmDAO, scanner);
-            }else if (e.getSource() == btnGererSeances) {
-                new GererSeancesPage(seanceDAO, scanner);
+                new GererFilmsPage(filmDAO, scanner, userID);
+            } else if (e.getSource() == btnGererSeances) {
+                new GererSeancesPage(seanceDAO, scanner, userID);
             } else if (e.getSource() == btnQuitter) {
                 System.out.println("Au revoir !");
                 System.exit(0);
             }
         }
+
     }
     public static void main(String[] args) {
+        // Initialisez votre ClientDAO ici
+        GererClientsPage.ConnexionPage connexionPage = new GererClientsPage.ConnexionPage(clientDAO);
 
-        new PageAccueil();
 
     }
+
+
 
 
 
 
     public static class GererBilletsPage extends JFrame implements ActionListener {
+        private final int userID;
         private BilletDAO billetDAO;
         private Scanner scanner;
 
         private JButton btnAjouterBillet;
-        private JButton btnTrouverBillet;
+
         private JButton btnListerBillets;
-        private JButton btnMettreAJourBillet;
+
         private JButton btnSupprimerBillet;
         private JButton btnRetour;
 
-        public GererBilletsPage(BilletDAO billetDAO, Scanner scanner) {
+        public GererBilletsPage(BilletDAO billetDAO, Scanner scanner, int userID) {
+            this.userID = userID;
             this.billetDAO = billetDAO;
             this.scanner = scanner;
 
-            setTitle("Gérer les billets");
+            setTitle("Gérer Mes billets");
             setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             setLayout(new GridLayout(6, 1));
 
             // Initialisation des boutons
-            btnAjouterBillet = createStyledButton("Ajouter un billet");
+            btnAjouterBillet = createStyledButton("Réserver une séance");
             btnAjouterBillet.addActionListener(this);
             add(btnAjouterBillet);
 
-            btnTrouverBillet = createStyledButton("Trouver un billet par ID");
-            btnTrouverBillet.addActionListener(this);
-            add(btnTrouverBillet);
 
-            btnListerBillets = createStyledButton("Lister tous les billets");
+
+            btnListerBillets = createStyledButton("Lister toutes mes séances");
             btnListerBillets.addActionListener(this);
             add(btnListerBillets);
 
-            btnMettreAJourBillet = createStyledButton("Mettre à jour un billet");
-            btnMettreAJourBillet.addActionListener(this);
-            add(btnMettreAJourBillet);
+
 
             btnSupprimerBillet = createStyledButton("Supprimer un billet");
             btnSupprimerBillet.addActionListener(this);
@@ -157,48 +162,80 @@ public class Test {
 
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == btnAjouterBillet) {
-                // Ajouter un billet
-                System.out.println("Ajout d'un billet.");
+                System.out.println("");
 
-                // Saisie des données pour ajouter un billet
-                int seanceId = Integer.parseInt(JOptionPane.showInputDialog("Entrez l'ID de la séance : "));
-                int clientId = Integer.parseInt(JOptionPane.showInputDialog("Entrez l'ID du client : "));
-                double prix = Double.parseDouble(JOptionPane.showInputDialog("Entrez le prix du billet : "));
-                String categorie = JOptionPane.showInputDialog("Entrez la catégorie du billet : ");
-
-                // Création d'un objet Billet avec les données saisies
-                Billet billet = new Billet(100, seanceId, clientId, prix, categorie);
-
-                // Appel de la méthode pour ajouter le billet dans la base de données
+                List<Seance> seances = null;
                 try {
-                    billetDAO.ajouterBillet(billet);
+                    seances = seanceDAO.listerToutesLesSeances();
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
                 }
 
-                // Affichage d'un message de confirmation
-                JOptionPane.showMessageDialog(null, "Billet ajouté avec succès.");
-            } else if (e.getSource() == btnTrouverBillet) {
-                // Trouver un billet par ID
-                int id = Integer.parseInt(JOptionPane.showInputDialog("Entrez l'ID du billet : "));
-                Billet billet = null;
-                try {
-                    billet = billetDAO.trouverBilletParId(id);
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
+                if (seances.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Aucune séance disponible.");
+                } else {
+                    // Création d'un modèle de tableau pour afficher les séances dans une JTable
+                    String[] entetes = {"ID", "Film", "Date et heure", "Salle"};
+                    Object[][] donnees = new Object[seances.size()][4];
+
+                    for (int i = 0; i < seances.size(); i++) {
+                        Seance seance = seances.get(i);
+                        // Récupérer le titre du film associé à cette séance
+                        String titreFilm = null;
+                        try {
+                            Film film = filmDAO.recupFilm(seance.getFilmId());
+                            if (film != null) {
+                                titreFilm = film.getTitre();
+                            }
+                        } catch (Exception ex) {
+                            throw new RuntimeException(ex);
+                        }
+
+                        donnees[i][0] = seance.getId();
+                        donnees[i][1] = titreFilm;
+                        donnees[i][2] = seance.getHeure();
+                        donnees[i][3] = seance.getSalle();
+                    }
+
+                    JTable table = new JTable(donnees, entetes);
+                    JScrollPane scrollPane = new JScrollPane(table);
+                    JOptionPane.showMessageDialog(null, scrollPane, "Liste des séances", JOptionPane.PLAIN_MESSAGE);
+
+                    // Obtenir l'index de la ligne sélectionnée
+                    int selectedRow = table.getSelectedRow();
+                    if (selectedRow != -1) {
+                        // Extraire l'ID de la séance sélectionnée
+                        int seanceId = (int) table.getValueAt(selectedRow, 0);
+                        double prix = Double.parseDouble(JOptionPane.showInputDialog("Entrez le prix du billet : "));
+                        String categorie = JOptionPane.showInputDialog("Entrez la catégorie du billet : ");
+
+                        // Création d'un objet Billet avec les données saisies
+                        Billet billet = new Billet(100, seanceId, userID, prix, categorie);
+
+                        // Appel de la méthode pour ajouter le billet dans la base de données
+                        try {
+                            billetDAO.ajouterBillet(billet);
+                        } catch (Exception ex) {
+                            throw new RuntimeException(ex);
+                        }
+
+                        // Affichage d'un message de confirmation
+                        JOptionPane.showMessageDialog(null, "Billet ajouté avec succès.");
+                    }
                 }
-                JOptionPane.showMessageDialog(null, billet != null ? billet.toString() : "Billet non trouvé.");
-            } else if (e.getSource() == btnListerBillets) {
-                // Lister tous les billets
+            }
+
+            else if (e.getSource() == btnListerBillets) {
+                // Lister tous les billets de l'utilisateur courant (userID)
                 List<Billet> billets = null;
                 try {
-                    billets = billetDAO.listerTousLesBillets();
-
+                    billets = billetDAO.listerBilletsParClientId(userID);
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
                 }
+
                 if (billets.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Aucun billet disponible.");
+                    JOptionPane.showMessageDialog(null, "Aucun billet disponible pour cet utilisateur.");
                 } else {
                     // Création d'un modèle de tableau pour afficher les billets dans une JTable
                     String[] entetes = {"ID", "ID Séance", "ID Client", "Prix", "Catégorie"};
@@ -215,40 +252,58 @@ public class Test {
 
                     JTable table = new JTable(donnees, entetes);
                     JScrollPane scrollPane = new JScrollPane(table);
-                    JOptionPane.showMessageDialog(null, scrollPane, "Liste des billets", JOptionPane.PLAIN_MESSAGE);
+                    JOptionPane.showMessageDialog(null, scrollPane, "Liste des billets de l'utilisateur", JOptionPane.PLAIN_MESSAGE);
                 }
             }
-            else if (e.getSource() == btnMettreAJourBillet) {
-                // Mettre à jour un billet
-                int id = Integer.parseInt(JOptionPane.showInputDialog("Entrez l'ID du billet à mettre à jour : "));
-                Billet billet = null;
+
+            else if (e.getSource() == btnSupprimerBillet) {
+                // Récupérer tous les billets de l'utilisateur
+                List<Billet> billetsUtilisateur = null;
                 try {
-                    billet = billetDAO.trouverBilletParId(id);
+                    System.out.println(userID);
+                    billetsUtilisateur = billetDAO.listerBilletsParClientId(userID);
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
                 }
-                if (billet == null) {
-                    JOptionPane.showMessageDialog(null, "Billet non trouvé.");
+
+                // Vérifier s'il existe des billets pour l'utilisateur
+                if (billetsUtilisateur.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Aucun billet disponible pour cet utilisateur.");
                 } else {
-                    double nouveauPrix = Double.parseDouble(JOptionPane.showInputDialog("Entrez le nouveau prix du billet : "));
-                    billet.setPrix(nouveauPrix);
-                    try {
-                        billetDAO.mettreAJourBillet(billet);
-                    } catch (Exception ex) {
-                        throw new RuntimeException(ex);
+                    // Créer un tableau de chaînes pour stocker les options de la liste déroulante
+                    String[] optionsBillets = new String[billetsUtilisateur.size()];
+
+                    // Remplir le tableau avec les options de la liste déroulante
+                    for (int i = 0; i < billetsUtilisateur.size(); i++) {
+                        Billet billet = billetsUtilisateur.get(i);
+                        optionsBillets[i] = "ID: " + billet.getId() + ", Séance ID: " + billet.getSeanceId() +
+                                ", Prix: " + billet.getPrix() + ", Catégorie: " + billet.getCategorie();
                     }
-                    JOptionPane.showMessageDialog(null, "Billet mis à jour avec succès.");
+
+                    // Afficher la boîte de dialogue pour sélectionner un billet à supprimer
+                    String selectedOption = (String) JOptionPane.showInputDialog(null, "Choisissez le billet à supprimer :",
+                            "Sélectionner un Billet", JOptionPane.PLAIN_MESSAGE, null, optionsBillets, optionsBillets[0]);
+
+                    if (selectedOption != null) {
+                        // Extraire l'ID du billet sélectionné
+                        // Trouver l'index de départ de l'ID
+                        int idIndex = selectedOption.indexOf("ID: ") + 4;
+
+// Extraire l'ID du billet sélectionné à partir de la chaîne
+                        int idSuppression = Integer.parseInt(selectedOption.substring(idIndex, selectedOption.indexOf(",", idIndex)));
+
+
+                        // Supprimer le billet sélectionné
+                        try {
+                            billetDAO.supprimerBillet(idSuppression);
+                            JOptionPane.showMessageDialog(null, "Billet supprimé avec succès.");
+                        } catch (Exception ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
                 }
-            } else if (e.getSource() == btnSupprimerBillet) {
-                // Supprimer un billet
-                int idSuppression = Integer.parseInt(JOptionPane.showInputDialog("Entrez l'ID du billet à supprimer : "));
-                try {
-                    billetDAO.supprimerBillet(idSuppression);
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-                JOptionPane.showMessageDialog(null, "Billet supprimé avec succès.");
-            } else if (e.getSource() == btnRetour) {
+            }
+            else if (e.getSource() == btnRetour) {
                 dispose(); // Ferme la fenêtre actuelle
             }
         }
@@ -267,7 +322,7 @@ public class Test {
         private JButton btnSupprimerClient;
         private JButton btnRetour;
 
-        public GererClientsPage(ClientDAO clientDAO, Scanner scanner) {
+        public GererClientsPage(ClientDAO clientDAO, Scanner scanner, int userID) {
             this.clientDAO = clientDAO;
             this.scanner = scanner;
 
@@ -302,14 +357,108 @@ public class Test {
             setSize(400, 400);
             setVisible(true);
         }
+        public static class ConnexionPage extends JFrame implements ActionListener {
+            private ClientDAO clientDAO;
 
+            private JTextField emailField;
+            private JPasswordField passwordField;
+            private JButton loginButton;
+            private JButton createAccountButton;
+            public boolean estConnexionValide() {
+                // Récupérer les informations d'identification saisies par l'utilisateur
+                String email = emailField.getText();
+                String password = new String(passwordField.getPassword());
+
+                try {
+                    // Vérifier si le compte existe dans la base de données
+                    if(clientDAO.trouverNomClientParEmailEtMotDePasse(email, password) != null){
+                        return true;
+                    }
+                    else{
+                        return false;
+                    }
+
+                } catch (Exception ex) {
+                    System.out.println("Erreur lors de la vérification de la connexion : " + ex.getMessage());
+                    return false;
+                }
+            }
+
+            public ConnexionPage(ClientDAO clientDAO) {
+                this.clientDAO = clientDAO;
+
+                setTitle("Connexion");
+                setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                setLayout(new GridLayout(3, 2));
+
+                JLabel emailLabel = new JLabel("Email:");
+                add(emailLabel);
+                emailField = new JTextField();
+                add(emailField);
+
+                JLabel passwordLabel = new JLabel("Mot de passe:");
+                add(passwordLabel);
+                passwordField = new JPasswordField();
+                add(passwordField);
+
+                loginButton = new JButton("Se connecter");
+                loginButton.addActionListener(this);
+                add(loginButton);
+
+                createAccountButton = new JButton("Créer un compte");
+                createAccountButton.addActionListener(this);
+                add(createAccountButton);
+
+                setSize(400, 300); // Définir une taille moyenne
+                setLocationRelativeTo(null); // Centrer la fenêtre sur l'écran
+                setVisible(true);
+            }
+
+            public void actionPerformed(ActionEvent e) {
+                if (e.getSource() == loginButton) {
+                    String email = emailField.getText();
+                    String password = new String(passwordField.getPassword());
+
+                    try {
+                        String nomClient = clientDAO.trouverNomClientParEmailEtMotDePasse(email, password);
+                        JOptionPane.showMessageDialog(null, "Bonjour " + nomClient + " !");
+                        if (estConnexionValide()) {
+                            int userID = clientDAO.trouverIDParEmailEtMotDePasse(email,password);
+                            setVisible(false);
+                            PageAccueil pageAccueil = new PageAccueil(userID);
+                            pageAccueil.setVisible(true);
+                        } else {
+                            // Gérer le cas où la connexion n'est pas valide
+                        }
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "Erreur de connexion : " + ex.getMessage());
+                    }
+                } else if (e.getSource() == createAccountButton) {
+                    String nom = JOptionPane.showInputDialog("Entrez votre nom:");
+                    String email = JOptionPane.showInputDialog("Entrez votre email:");
+                    String type = JOptionPane.showInputDialog("Entrez votre type de compte:");
+                    String password = JOptionPane.showInputDialog("Entrez votre mot de passe:");
+
+                    Client client = new Client(0, nom, email, type, password);
+                    try {
+                        clientDAO.ajouterClient(client);
+                        JOptionPane.showMessageDialog(null, "Compte créé avec succès.");
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "Erreur lors de la création du compte : " + ex.getMessage());
+                    }
+                }
+            }
+
+
+        }
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == btnAjouterClient) {
                 // Ajouter un client
                 String nom = JOptionPane.showInputDialog("Entrez le nom du client : ");
                 String email = JOptionPane.showInputDialog("Entrez l'email du client : ");
                 String type = JOptionPane.showInputDialog("Entrez le type du client : ");
-                Client client = new Client(10, nom, email, type);
+                String motDePasse = JOptionPane.showInputDialog(("Entrez votre mot de passe"));
+                Client client = new Client(10, nom, email, type,motDePasse);
                 try {
                     clientDAO.ajouterClient(client);
                     JOptionPane.showMessageDialog(null, "Client ajouté avec succès.");
@@ -338,8 +487,8 @@ public class Test {
                     JOptionPane.showMessageDialog(null, "Aucun client disponible.");
                 } else {
                     // Création d'un modèle de tableau pour afficher les clients dans une JTable
-                    String[] entetes = {"ID", "Nom", "Email", "Type"};
-                    Object[][] donnees = new Object[clients.size()][4];
+                    String[] entetes = {"ID", "Nom", "Email", "Type", "Mot de Passe"};
+                    Object[][] donnees = new Object[clients.size()][5];
 
                     for (int i = 0; i < clients.size(); i++) {
                         Client client = clients.get(i);
@@ -347,6 +496,7 @@ public class Test {
                         donnees[i][1] = client.getNom();
                         donnees[i][2] = client.getEmail();
                         donnees[i][3] = client.getType();
+                        donnees[i][4] = client.getMotDePasse();
                     }
 
                     JTable table = new JTable(donnees, entetes);
@@ -369,9 +519,11 @@ public class Test {
                     String nouveauNom = JOptionPane.showInputDialog("Entrez le nouveau nom du client : ");
                     String nouvelEmail = JOptionPane.showInputDialog("Entrez le nouvel email du client : ");
                     String nouveauType = JOptionPane.showInputDialog("Entrez le nouveau type du client : ");
+                    String nouveauMdp = JOptionPane.showInputDialog("Entrez le nouveau Mot de passe du client : ");
                     client.setNom(nouveauNom);
                     client.setEmail(nouvelEmail);
                     client.setType(nouveauType);
+                    client.setType(nouveauMdp);
                     try {
                         clientDAO.mettreAJourClient(client);
                         JOptionPane.showMessageDialog(null, "Client mis à jour avec succès.");
@@ -407,7 +559,7 @@ public class Test {
         private JButton btnSupprimerEmploye;
         private JButton btnRetour;
 
-        public GererEmployesPage(EmployeDAO employeDAO, Scanner scanner) {
+        public GererEmployesPage(EmployeDAO employeDAO, Scanner scanner, int userID) {
             this.employeDAO = employeDAO;
             this.scanner = scanner;
 
@@ -549,7 +701,7 @@ public class Test {
         private JButton btnMettreAJourFilm;
         private JButton btnSupprimerFilm;
         private JButton btnRetour;
-    public GererFilmsPage(FilmDAO filmDAO, Scanner scanner) {
+    public GererFilmsPage(FilmDAO filmDAO, Scanner scanner, int userID) {
         this.filmDAO = filmDAO;
         this.scanner = scanner;
 
@@ -689,7 +841,7 @@ public class Test {
         private JButton btnSupprimerSeance;
         private JButton btnRetour;
 
-        public GererSeancesPage(SeanceDAO seanceDAO, Scanner scanner) {
+        public GererSeancesPage(SeanceDAO seanceDAO, Scanner scanner, int userID) {
             this.seanceDAO = seanceDAO;
             this.scanner = scanner;
 

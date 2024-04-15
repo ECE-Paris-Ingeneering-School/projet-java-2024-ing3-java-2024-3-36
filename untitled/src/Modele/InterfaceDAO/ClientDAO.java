@@ -10,4 +10,7 @@ public interface ClientDAO {
     List<Client> listerTousLesClients() throws Exception;
     void mettreAJourClient(Client client) throws Exception;
     void supprimerClient(int id) throws Exception;
+    String trouverNomClientParEmailEtMotDePasse(String email, String motDePasse);
+    int trouverIDParEmailEtMotDePasse(String email, String motDePasse) throws Exception;
+
 }

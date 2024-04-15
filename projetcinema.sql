@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS `clients` (
   `nom` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `type` varchar(255) NOT NULL,
+    `motDePasse` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -89,6 +90,14 @@ INSERT INTO `employes` (`id`, `nom`, `position`, `email`, `motDePasse`) VALUES
 --
 -- Structure de la table `films`
 --
+CREATE TABLE IF NOT EXISTS `seances` (
+                                         `id` int NOT NULL AUTO_INCREMENT,
+                                         `filmId` int NOT NULL,
+                                         `heure` datetime NOT NULL,
+                                         `salle` varchar(255) NOT NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`filmId`) REFERENCES `films` (`id`)
+    ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 DROP TABLE IF EXISTS `films`;
 CREATE TABLE IF NOT EXISTS `films` (
@@ -101,9 +110,6 @@ CREATE TABLE IF NOT EXISTS `films` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Déchargement des données de la table `films`
---
 
 INSERT INTO `films` (`id`, `titre`, `genre`, `duree`, `description`, `realisateur`) VALUES
 (2, 'Le Seigneur des Anneaux', 'Fantaisie', 178, 'Un voyage inattendu.', 'Peter Jackson'),

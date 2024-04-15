@@ -2,7 +2,7 @@ package Modele.Objets;
 
 public class Film {
     private int id;
-    private String titre;
+    private static String titre;
     private String genre;
     private int duree;
     private String description;
@@ -26,7 +26,7 @@ public class Film {
         this.id = id;
     }
 
-    public String getTitre() {
+    public static String getTitre() {
         return titre;
     }
 

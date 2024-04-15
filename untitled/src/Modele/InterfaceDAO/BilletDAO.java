@@ -10,4 +10,5 @@ public interface BilletDAO {
     List<Billet> listerTousLesBillets() throws Exception;
     void mettreAJourBillet(Billet billet) throws Exception;
     void supprimerBillet(int id) throws Exception;
+    public List<Billet> listerBilletsParClientId(int clientId)throws Exception;
 }

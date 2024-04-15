@@ -58,5 +58,8 @@ public class Seance {
     }
 
 
+    public String getFilmTitre() {
+        return Film.getTitre();
+    }
 }
 
