@@ -8,12 +8,12 @@ import java.util.List;
 import Utils.ConnectionDatabase;
 public class ClientDAOImpl implements ClientDAO {
     private static final String INSERT_CLIENTS_SQL = "INSERT INTO clients" +
-            " (nom, email, type,motDePasse) VALUES (?, ?, ?,?);";
+            " (nom, email, type, motDePasse, etat) VALUES (?, ?, ?, ?, ?);";
 
-    private static final String SELECT_CLIENT_BY_ID = "select id, nom, email, type,motDePasse from clients where id =?";
+    private static final String SELECT_CLIENT_BY_ID = "select id, nom, email, type, motDePasse, etat from clients where id =?";
     private static final String SELECT_ALL_CLIENTS = "select * from clients";
     private static final String DELETE_CLIENTS_SQL = "delete from clients where id = ?;";
-    private static final String UPDATE_CLIENTS_SQL = "update clients set nom = ?, email= ?, type =?,motDePasse=? where id = ?;";
+    private static final String UPDATE_CLIENTS_SQL = "update clients set nom = ?, email= ?, type =?, motDePasse=?, etat =? where id = ?;";
 
 
     @Override
@@ -24,6 +24,7 @@ public class ClientDAOImpl implements ClientDAO {
             preparedStatement.setString(2, client.getEmail());
             preparedStatement.setString(3, client.getType());
             preparedStatement.setString(4,client.getMotDePasse());
+            preparedStatement.setString(5, client.getEtat());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             printSQLException(e);
@@ -81,7 +82,8 @@ public class ClientDAOImpl implements ClientDAO {
                 String email = rs.getString("email");
                 String type = rs.getString("type");
                 String motDePasse = rs.getString("motDePasse");
-                client = new Client(id, nom, email, type,motDePasse);
+                String etat = rs.getString("etat");
+                client = new Client(id, nom, email, type, motDePasse, etat);
             }
         } catch (SQLException e) {
             printSQLException(e);
@@ -102,7 +104,8 @@ public class ClientDAOImpl implements ClientDAO {
                 String email = rs.getString("email");
                 String type = rs.getString("type");
                 String motDePasse = rs.getString("motDePasse");
-                clients.add(new Client(id, nom, email, type,motDePasse));
+                String etat = rs.getString("etat");
+                clients.add(new Client(id, nom, email, type,motDePasse, etat));
             }
         } catch (SQLException e) {
             printSQLException(e);
@@ -118,6 +121,7 @@ public class ClientDAOImpl implements ClientDAO {
             statement.setString(2, client.getEmail());
             statement.setString(3, client.getType());
             statement.setString(5, client.getMotDePasse());
+            statement.setString(6, client.getEtat());
             statement.setInt(4, client.getId());
 
             statement.executeUpdate();

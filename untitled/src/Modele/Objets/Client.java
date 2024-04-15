@@ -6,13 +6,15 @@ public class Client {
     private String email;
     private String type;
     private String motDePasse;
+    private String etat;
 
-    public Client(int id, String nom, String email, String type, String motDePasse) {
+    public Client(int id, String nom, String email, String type, String motDePasse, String etat) {
         this.id = id;
         this.nom = nom;
         this.email = email;
         this.type = type;
         this.motDePasse = motDePasse;
+        this.etat = etat;
     }
 
     public int getId() {
@@ -55,6 +57,14 @@ public class Client {
         this.type = type;
     }
 
+    public String getEtat() {
+        return etat;
+    }
+
+    public void setEtat(String etat) {
+        this.etat = etat;
+    }
+
     @Override
     public String toString() {
         return "Client{" +
@@ -62,6 +72,7 @@ public class Client {
                 ", nom='" + nom + '\'' +
                 ", email='" + email + '\'' +
                 ", type='" + type + '\'' +
+                ", etat='" + etat + '\'' +
                 '}';
     }
 

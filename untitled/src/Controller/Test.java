@@ -437,9 +437,20 @@ public class Test {
                     String nom = JOptionPane.showInputDialog("Entrez votre nom:");
                     String email = JOptionPane.showInputDialog("Entrez votre email:");
                     String type = JOptionPane.showInputDialog("Entrez votre type de compte:");
+
+                    String[] options = {"régulier", "sénior", "enfant"};
+                    String etat = (String) JOptionPane.showInputDialog(
+                            null,
+                            "Sélectionnez votre catégorie de compte (régulier, sénior ou enfant) :",
+                            "Choix de catégorie",
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            options,
+                            options[0]);
+
                     String password = JOptionPane.showInputDialog("Entrez votre mot de passe:");
 
-                    Client client = new Client(0, nom, email, type, password);
+                    Client client = new Client(0, nom, email, type, password, etat);
                     try {
                         clientDAO.ajouterClient(client);
                         JOptionPane.showMessageDialog(null, "Compte créé avec succès.");
@@ -457,8 +468,17 @@ public class Test {
                 String nom = JOptionPane.showInputDialog("Entrez le nom du client : ");
                 String email = JOptionPane.showInputDialog("Entrez l'email du client : ");
                 String type = JOptionPane.showInputDialog("Entrez le type du client : ");
+                String[] options = {"régulier", "sénior", "enfant"};
+                String etat = (String) JOptionPane.showInputDialog(
+                        null,
+                        "Sélectionnez la catégorie de compte (régulier, sénior ou enfant) :",
+                        "Choix de catégorie",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        options,
+                        options[0]);
                 String motDePasse = JOptionPane.showInputDialog(("Entrez votre mot de passe"));
-                Client client = new Client(10, nom, email, type,motDePasse);
+                Client client = new Client(10, nom, email, type, motDePasse, etat);
                 try {
                     clientDAO.ajouterClient(client);
                     JOptionPane.showMessageDialog(null, "Client ajouté avec succès.");
