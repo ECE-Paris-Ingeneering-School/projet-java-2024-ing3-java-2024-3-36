@@ -309,7 +309,8 @@ public class Test {
                 String nom = JOptionPane.showInputDialog("Entrez le nom du client : ");
                 String email = JOptionPane.showInputDialog("Entrez l'email du client : ");
                 String type = JOptionPane.showInputDialog("Entrez le type du client : ");
-                Client client = new Client(10, nom, email, type);
+                String etat = JOptionPane.showInputDialog("Entrez l'etat du client (réguliers, seniors ou enfants) : ");
+                Client client = new Client(10, nom, email, type, etat);
                 try {
                     clientDAO.ajouterClient(client);
                     JOptionPane.showMessageDialog(null, "Client ajouté avec succès.");
@@ -338,8 +339,8 @@ public class Test {
                     JOptionPane.showMessageDialog(null, "Aucun client disponible.");
                 } else {
                     // Création d'un modèle de tableau pour afficher les clients dans une JTable
-                    String[] entetes = {"ID", "Nom", "Email", "Type"};
-                    Object[][] donnees = new Object[clients.size()][4];
+                    String[] entetes = {"ID", "Nom", "Email", "Type", "Etat"};
+                    Object[][] donnees = new Object[clients.size()][5];
 
                     for (int i = 0; i < clients.size(); i++) {
                         Client client = clients.get(i);
@@ -347,6 +348,7 @@ public class Test {
                         donnees[i][1] = client.getNom();
                         donnees[i][2] = client.getEmail();
                         donnees[i][3] = client.getType();
+                        donnees[i][4] = client.getEtat();
                     }
 
                     JTable table = new JTable(donnees, entetes);
@@ -369,9 +371,11 @@ public class Test {
                     String nouveauNom = JOptionPane.showInputDialog("Entrez le nouveau nom du client : ");
                     String nouvelEmail = JOptionPane.showInputDialog("Entrez le nouvel email du client : ");
                     String nouveauType = JOptionPane.showInputDialog("Entrez le nouveau type du client : ");
+                    String nouvelEtat = JOptionPane.showInputDialog("Entrez le nouvel etat du client (réguliers, sénior ou enfant) : ");
                     client.setNom(nouveauNom);
                     client.setEmail(nouvelEmail);
                     client.setType(nouveauType);
+                    client.setEtat(nouvelEtat);
                     try {
                         clientDAO.mettreAJourClient(client);
                         JOptionPane.showMessageDialog(null, "Client mis à jour avec succès.");
