@@ -4,9 +4,7 @@ import Modele.ImplementationsDAO.*;
 import Modele.InterfaceDAO.*;
 import Modele.Objets.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -279,8 +277,8 @@ public class Test {
                                 JOptionPane.showMessageDialog(null, "Aucune séance disponible pour ce film.");
                             } else {
                                 // Création d'un modèle de tableau pour afficher les séances dans une JTable
-                                String[] entetes = {"ID", "Film", "Date et heure", "Salle"};
-                                Object[][] donnees = new Object[seances.size()][4];
+                                String[] entetes = {"ID", "Film", "Date et heure", "Salle", "Prix"};
+                                Object[][] donnees = new Object[seances.size()][5];
 
                                 for (int i = 0; i < seances.size(); i++) {
                                     Seance seance = seances.get(i);
@@ -288,6 +286,36 @@ public class Test {
                                     donnees[i][1] = titres.get(selectedIndex); // Utiliser le titre de l'affiche sélectionnée
                                     donnees[i][2] = seance.getHeure();
                                     donnees[i][3] = seance.getSalle();
+                                    if((seance.getSalle()).equals("Salle Standard")) {
+                                        donnees[i][4] = 8;
+                                    }
+                                    else if((seance.getSalle()).equals("Salle 3D")) {
+                                        donnees[i][4] = 9;
+                                    }
+                                    else if((seance.getSalle()).equals("Salle THX")) {
+                                        donnees[i][4] = 10;
+                                    }
+                                    else if((seance.getSalle()).equals("Salle UltraAVX")) {
+                                        donnees[i][4] = 11;
+                                    }
+                                    else if((seance.getSalle()).equals("Salle Dolby Cinema")) {
+                                        donnees[i][4] = 12;
+                                    }
+                                    else if((seance.getSalle()).equals("Salle IMAX")) {
+                                        donnees[i][4] = 13;
+                                    }
+                                    else if((seance.getSalle()).equals("Salle D-Box")) {
+                                        donnees[i][4] = 14;
+                                    }
+                                    else if((seance.getSalle()).equals("Salle 4DX")) {
+                                        donnees[i][4] = 15;
+                                    }
+                                    else if((seance.getSalle()).equals("Salle VIP")) {
+                                        donnees[i][4] = 15;
+                                    }
+                                    else if((seance.getSalle()).equals("Salle Gold Class")) {
+                                        donnees[i][4] = 16;
+                                    }
                                 }
 
                                 JTable table = new JTable(donnees, entetes);
@@ -299,7 +327,38 @@ public class Test {
                                 if (selectedRow != -1) {
                                     // Extraire l'ID de la séance sélectionnée
                                     int seanceId = (int) table.getValueAt(selectedRow, 0);
-                                    double prix = Double.parseDouble(JOptionPane.showInputDialog("Entrez le prix du billet : "));
+
+                                    Seance seance1 = null;
+                                    try {
+                                        seance1 = seanceDAO.trouverSeanceParId(seanceId);
+                                    } catch (Exception ex) {
+                                        throw new RuntimeException(ex);
+                                    }
+
+                                    double prix = 8;
+
+                                    if ((seance1.getSalle()).equals("Salle Standard")) {
+                                        prix = 8;
+                                    } else if ((seance1.getSalle()).equals("Salle 3D")) {
+                                        prix = 9;
+                                    } else if ((seance1.getSalle()).equals("Salle THX")) {
+                                        prix = 10;
+                                    } else if ((seance1.getSalle()).equals("Salle UltraAVX")) {
+                                        prix = 11;
+                                    } else if ((seance1.getSalle()).equals("Salle Dolby Cinema")) {
+                                        prix = 12;
+                                    } else if ((seance1.getSalle()).equals("Salle IMAX")) {
+                                        prix = 13;
+                                    } else if ((seance1.getSalle()).equals("Salle D-Box")) {
+                                        prix = 14;
+                                    } else if ((seance1.getSalle()).equals("Salle 4DX")) {
+                                        prix = 15;
+                                    } else if ((seance1.getSalle()).equals("Salle VIP")) {
+                                        prix = 15;
+                                    } else if ((seance1.getSalle()).equals("Salle Gold Class")) {
+                                        prix = 16;
+                                    }
+
                                     String categorie = JOptionPane.showInputDialog("Entrez la catégorie du billet : ");
 
                                     // Création d'un objet Billet avec les données saisies
@@ -388,15 +447,89 @@ public class Test {
 
 
     public static void main(String[] args) {
-        // Initialisez votre ClientDAO ici
+        // Code pour supprimer tous les éléments de la table films
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/projetcinema", "root", "");
+             Statement statement = connection.createStatement()) {
+
+            // Requête pour supprimer tous les éléments de la table films
+            String sqlDelete = "DELETE FROM `films`";
+
+            // Exécution de la requête de suppression
+            statement.executeUpdate(sqlDelete);
+
+            System.out.println("Tous les films ont été supprimés de la base de données.");
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de la suppression des films : " + e.getMessage());
+        }
+
+        String repertoireImages = "";
+
+        // Liste des noms d'affiches des films
+        String[] affiches = {
+                "affiche_inception.jpg",
+                "affiche_le_parrain.jpg",
+                "affiche_forrest_gump.jpg",
+                "affiche_interstellar.jpg",
+                "affiche_la_liste_de_schindler.jpg",
+                "affiche_pulp_fiction.jpg",
+                "affiche_le_seigneur_des_anneaux.jpg",
+                "affiche_le_silence_des_agneaux.jpg",
+                "affiche_fight_club.jpg",
+                "affiche_les_evades.jpg"
+        };
+
+        // Liste des titres, genres, durées, descriptions et réalisateurs des films
+        String[][] films = {
+                {"Inception", "Science-fiction, Action", "148", "Un voleur experimente est charge d'implanter une idee dans l'esprit dun PDG en utilisant linception.", "Christopher Nolan"},
+                {"Le Parrain", "Crime, Drame", "175", "La saga d'une famille de la mafia italo-americaine dirigee par le patriarche Vito Corleone.", "Francis Ford Coppola"},
+                {"Forrest Gump", "Drame, Romance", "142", "La vie de Forrest Gump, un homme simple desprit, qui se retrouve implique dans certains des moments les plus marquants de l'histoire americaine.", "Robert Zemeckis"},
+                {"Interstellar", "Science-fiction, Drame", "169", "Un groupe d'explorateurs voyage a travers un trou de ver dans l'espace pour rechercher une nouvelle planete habitable pour l'humanite.", "Christopher Nolan"},
+                {"La Liste de Schindler", "Biographie, Drame, Histoire", "195", "L'histoire vraie d'Oskar Schindler, un homme d'affaires allemand qui a sauve plus de mille Juifs pendant l'Holocauste en les employant dans ses usines.", "Steven Spielberg"},
+                {"Pulp Fiction", "Crime, Drame", "154", "Une serie d'histoires entrelacees mettant en vedette des gangsters, des boxeurs, des revendeurs et des tueurs a gages dans le Los Angeles des annees 90.", "Quentin Tarantino"},
+                {"Le Seigneur des Anneaux : Le Retour du Roi", "Fantasy, Aventure, Drame", "201", "La conclusion epique de la trilogie du Seigneur des Anneaux alors que les forces de la Terre du Milieu se preparent pour une bataille finale contre Sauron.", "Peter Jackson"},
+                {"Le Silence des Agneaux", "Crime, Drame, Thriller", "118", "Un jeune agent du FBI interroge un psychiatre cannibale emprisonne pour obtenir de laide sur la traque dun tueur en serie actif.", "Jonathan Demme"},
+                {"Fight Club", "Drame", "139", "Un homme anonyme souffrant d'insomnie et son nouvel ami charismatique se lancent dans une aventure de destruction a grande echelle.", "David Fincher"},
+                {"Les Evades", "Drame, Crime", "142", "L'histoire damitie entre deux prisonniers condamnes a perpetuite, Andy Dufresne et Ellis Red Redding, qui cherchent la liberte et la redemption.", "Frank Darabont"}
+        };
+
+        // Insertion de chaque film dans la base de données
+        for (int i = 0; i < affiches.length; i++) {
+            try {
+                // Création d'un objet File pour l'image
+                File imageFile = new File(repertoireImages + "" + affiches[i]);
+
+                // Lecture des données binaires de l'image
+                byte[] data = Files.readAllBytes(imageFile.toPath());
+
+                // Utilisation d'une requête SQL paramétrée pour insérer les données binaires dans la base de données
+                String sql = "INSERT INTO `films` ( `id`,`titre`, `genre`, `duree`, `description`, `realisateur`, `affiche`)\n" +
+                        "VALUES (?,?, ?, ?, ?, ?, ?)";
+
+                try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/projetcinema", "root", "");
+                     PreparedStatement statement = connection.prepareStatement(sql)) {
+
+                    // Définition des paramètres
+                    statement.setInt(1,i);
+                    statement.setString(2, films[i][0]); // Titre
+                    statement.setString(3, films[i][1]); // Genre
+                    statement.setInt(4, Integer.parseInt(films[i][2])); // Durée (convertie en int)
+                    statement.setString(5, films[i][3]); // Description
+                    statement.setString(6, films[i][4]); // Réalisateur
+                    statement.setBytes(7, data); // Données binaires de l'affiche
+
+                    // Exécution de la requête
+                    statement.executeUpdate();
+
+                    System.out.println("Film inséré avec succès dans la base de données : " + films[i][0]);
+                } catch (SQLException e) {
+                    System.out.println("Erreur lors de l'insertion du film dans la base de données : " + e.getMessage());
+                }
+            } catch (IOException e) {
+                System.out.println("Erreur lors de la lecture de l'image : " + e.getMessage());
+            }
+        }
         GererClientsPage.ConnexionPage connexionPage = new GererClientsPage.ConnexionPage(clientDAO);
-
-
     }
-
-
-
-
 
 
     public static class GererBilletsPage extends JFrame implements ActionListener {
@@ -461,8 +594,8 @@ public class Test {
                     JOptionPane.showMessageDialog(null, "Aucune séance disponible.");
                 } else {
                     // Création d'un modèle de tableau pour afficher les séances dans une JTable
-                    String[] entetes = {"ID", "Film", "Date et heure", "Salle"};
-                    Object[][] donnees = new Object[seances.size()][4];
+                    String[] entetes = {"ID", "Film", "Date et heure", "Salle", "Prix"};
+                    Object[][] donnees = new Object[seances.size()][5];
 
                     for (int i = 0; i < seances.size(); i++) {
                         Seance seance = seances.get(i);
@@ -481,6 +614,38 @@ public class Test {
                         donnees[i][1] = titreFilm;
                         donnees[i][2] = seance.getHeure();
                         donnees[i][3] = seance.getSalle();
+
+                        if((seance.getSalle()).equals("Salle Standard")) {
+                            donnees[i][4] = 8;
+                        }
+                        else if((seance.getSalle()).equals("Salle 3D")) {
+                            donnees[i][4] = 9;
+                        }
+                        else if((seance.getSalle()).equals("Salle THX")) {
+                            donnees[i][4] = 10;
+                        }
+                        else if((seance.getSalle()).equals("Salle UltraAVX")) {
+                            donnees[i][4] = 11;
+                        }
+                        else if((seance.getSalle()).equals("Salle Dolby Cinema")) {
+                            donnees[i][4] = 12;
+                        }
+                        else if((seance.getSalle()).equals("Salle IMAX")) {
+                            donnees[i][4] = 13;
+                        }
+                        else if((seance.getSalle()).equals("Salle D-Box")) {
+                            donnees[i][4] = 14;
+                        }
+                        else if((seance.getSalle()).equals("Salle 4DX")) {
+                            donnees[i][4] = 15;
+                        }
+                        else if((seance.getSalle()).equals("Salle VIP")) {
+                            donnees[i][4] = 15;
+                        }
+                        else if((seance.getSalle()).equals("Salle Gold Class")) {
+                            donnees[i][4] = 16;
+                        }
+
                     }
 
                     JTable table = new JTable(donnees, entetes);
@@ -492,7 +657,37 @@ public class Test {
                     if (selectedRow != -1) {
                         // Extraire l'ID de la séance sélectionnée
                         int seanceId = (int) table.getValueAt(selectedRow, 0);
-                        double prix = Double.parseDouble(JOptionPane.showInputDialog("Entrez le prix du billet : "));
+
+                        Seance seance1 = null;
+                        try {
+                            seance1 = seanceDAO.trouverSeanceParId(seanceId);
+                        } catch (Exception ex) {
+                            throw new RuntimeException(ex);
+                        }
+
+                        double prix = 8;
+
+                        if ((seance1.getSalle()).equals("Salle Standard")) {
+                            prix = 8;
+                        } else if ((seance1.getSalle()).equals("Salle 3D")) {
+                            prix = 9;
+                        } else if ((seance1.getSalle()).equals("Salle THX")) {
+                            prix = 10;
+                        } else if ((seance1.getSalle()).equals("Salle UltraAVX")) {
+                            prix = 11;
+                        } else if ((seance1.getSalle()).equals("Salle Dolby Cinema")) {
+                            prix = 12;
+                        } else if ((seance1.getSalle()).equals("Salle IMAX")) {
+                            prix = 13;
+                        } else if ((seance1.getSalle()).equals("Salle D-Box")) {
+                            prix = 14;
+                        } else if ((seance1.getSalle()).equals("Salle 4DX")) {
+                            prix = 15;
+                        } else if ((seance1.getSalle()).equals("Salle VIP")) {
+                            prix = 15;
+                        } else if ((seance1.getSalle()).equals("Salle Gold Class")) {
+                            prix = 16;
+                        }
                         String categorie = JOptionPane.showInputDialog("Entrez la catégorie du billet : ");
 
                         // Création d'un objet Billet avec les données saisies
@@ -524,16 +719,30 @@ public class Test {
                     JOptionPane.showMessageDialog(null, "Aucun billet disponible pour cet utilisateur.");
                 } else {
                     // Création d'un modèle de tableau pour afficher les billets dans une JTable
-                    String[] entetes = {"ID", "ID Séance", "ID Client", "Prix", "Catégorie"};
+                    String[] entetes = {"ID Séance", "Film", "Heure", "Salle", "Prix"};
                     Object[][] donnees = new Object[billets.size()][5];
 
                     for (int i = 0; i < billets.size(); i++) {
                         Billet billet = billets.get(i);
-                        donnees[i][0] = billet.getId();
-                        donnees[i][1] = billet.getSeanceId();// RECUPERER LE TITRE
-                        donnees[i][2] = billet.getClientId();
-                        donnees[i][3] = billet.getPrix();
-                        donnees[i][4] = billet.getCategorie();
+                        Seance seance = null;
+                        try {
+                            seance = seanceDAO.trouverSeanceParId(billet.getId());
+                        } catch (Exception ex) {
+                            throw new RuntimeException(ex);
+                        }
+
+                        Film film = null;
+                        try {
+                            film = filmDAO.recupFilm(seance.getFilmId());
+                        } catch (Exception ex) {
+                            throw new RuntimeException(ex);
+                        }
+
+                        donnees[i][0] = billet.getSeanceId();
+                        donnees[i][1] = film.getTitre();
+                        donnees[i][2] = seance.getHeure();
+                        donnees[i][3] = seance.getSalle();
+                        donnees[i][4] = billet.getPrix();
                     }
 
                     JTable table = new JTable(donnees, entetes);
@@ -722,17 +931,39 @@ public class Test {
                 } else if (e.getSource() == createAccountButton) {
                     String nom = JOptionPane.showInputDialog("Entrez votre nom:");
                     String email = JOptionPane.showInputDialog("Entrez votre email:");
-                    String type = JOptionPane.showInputDialog("Entrez votre type de compte:");
+                    String type = "null";
+                    String etat = "null";
+                    if (!email.equals("admin@admin.fr")) {
 
-                    String[] options = {"régulier", "sénior", "enfant"};
-                    String etat = (String) JOptionPane.showInputDialog(
-                            null,
-                            "Sélectionnez votre catégorie de compte (régulier, sénior ou enfant) :",
-                            "Choix de catégorie",
-                            JOptionPane.QUESTION_MESSAGE,
-                            null,
-                            options,
-                            options[0]);
+                        String[] options_type = {"non membre", "membre"};
+                        type = (String) JOptionPane.showInputDialog(
+                                null,
+                                "Sélectionnez votre type de compte: :",
+                                "Choix de type",
+                                JOptionPane.QUESTION_MESSAGE,
+                                null,
+                                options_type,
+                                options_type[0]);
+
+                        if (type == "membre") {
+
+                            String[] options = {"régulier", "sénior", "enfant"};
+                            etat = (String) JOptionPane.showInputDialog(
+                                    null,
+                                    "Sélectionnez votre catégorie de compte :",
+                                    "Choix de catégorie",
+                                    JOptionPane.QUESTION_MESSAGE,
+                                    null,
+                                    options,
+                                    options[0]);
+                        } else {
+                            etat = "null";
+                        }
+                    }
+                    else {
+                        type = "null";
+                        etat = "null";
+                    }
 
                     String password = JOptionPane.showInputDialog("Entrez votre mot de passe:");
 
@@ -753,16 +984,33 @@ public class Test {
                 // Ajouter un client
                 String nom = JOptionPane.showInputDialog("Entrez le nom du client : ");
                 String email = JOptionPane.showInputDialog("Entrez l'email du client : ");
-                String type = JOptionPane.showInputDialog("Entrez le type du client : ");
-                String[] options = {"régulier", "sénior", "enfant"};
-                String etat = (String) JOptionPane.showInputDialog(
+
+                String[] options_type = {"non membre", "membre"};
+                String type = (String) JOptionPane.showInputDialog(
                         null,
-                        "Sélectionnez la catégorie de compte (régulier, sénior ou enfant) :",
-                        "Choix de catégorie",
+                        "Sélectionnez le type de compte: :",
+                        "Choix de type",
                         JOptionPane.QUESTION_MESSAGE,
                         null,
-                        options,
-                        options[0]);
+                        options_type,
+                        options_type[0]);
+
+                String etat = "null";
+
+                if(type=="membre") {
+                    String[] options = {"régulier", "sénior", "enfant"};
+                    etat = (String) JOptionPane.showInputDialog(
+                            null,
+                            "Sélectionnez la catégorie de compte :",
+                            "Choix de catégorie",
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            options,
+                            options[0]);
+                }
+                else {
+                    etat = "null";
+                }
                 String motDePasse = JOptionPane.showInputDialog(("Entrez votre mot de passe"));
                 Client client = new Client(10, nom, email, type, motDePasse, etat);
                 try {
@@ -1234,8 +1482,8 @@ public class Test {
                     JOptionPane.showMessageDialog(null, "Aucune séance disponible.");
                 } else {
                     // Création d'un modèle de tableau pour afficher les séances dans une JTable
-                    String[] entetes = {"ID", "ID du film", "Date et heure", "Salle"};
-                    Object[][] donnees = new Object[seances.size()][4];
+                    String[] entetes = {"ID", "ID du film", "Date et heure", "Salle", "Prix"};
+                    Object[][] donnees = new Object[seances.size()][5];
 
                     for (int i = 0; i < seances.size(); i++) {
                         Seance seance = seances.get(i);
@@ -1243,6 +1491,36 @@ public class Test {
                         donnees[i][1] = seance.getFilmId();
                         donnees[i][2] = seance.getHeure();
                         donnees[i][3] = seance.getSalle();
+                        if((seance.getSalle()).equals("Salle Standard")) {
+                            donnees[i][4] = 8;
+                        }
+                        else if((seance.getSalle()).equals("Salle 3D")) {
+                            donnees[i][4] = 9;
+                        }
+                        else if((seance.getSalle()).equals("Salle THX")) {
+                            donnees[i][4] = 10;
+                        }
+                        else if((seance.getSalle()).equals("Salle UltraAVX")) {
+                            donnees[i][4] = 11;
+                        }
+                        else if((seance.getSalle()).equals("Salle Dolby Cinema")) {
+                            donnees[i][4] = 12;
+                        }
+                        else if((seance.getSalle()).equals("Salle IMAX")) {
+                            donnees[i][4] = 13;
+                        }
+                        else if((seance.getSalle()).equals("Salle D-Box")) {
+                            donnees[i][4] = 14;
+                        }
+                        else if((seance.getSalle()).equals("Salle 4DX")) {
+                            donnees[i][4] = 15;
+                        }
+                        else if((seance.getSalle()).equals("Salle VIP")) {
+                            donnees[i][4] = 15;
+                        }
+                        else if((seance.getSalle()).equals("Salle Gold Class")) {
+                            donnees[i][4] = 16;
+                        }
                     }
 
                     JTable table = new JTable(donnees, entetes);
