@@ -25,6 +25,7 @@ public class Test {
     private static EmployeDAO employeDAO = new EmployeDAOImpl();
     private static FilmDAO filmDAO = new FilmDAOImpl();
     private static SeanceDAO seanceDAO = new SeanceDAOImpl();
+    private static OffresDAO offresDAO = new OffresDAOImpl();
     private static Scanner scanner = new Scanner(System.in);
 
     private static JButton createStyledButton(String text) {
@@ -47,6 +48,7 @@ public class Test {
         private JButton btnGererEmployes;
         private JButton btnGererFilms;
         private JButton btnGererSeances;
+        private JButton btnOffres;
         private JButton btnQuitter;
 
         public PageAccueil(int userID) throws Exception {
@@ -70,6 +72,9 @@ public class Test {
 
             btnGererSeances = createStyledButton("Gérer les Séances");
             btnGererSeances.addActionListener(this);
+
+            btnOffres = createStyledButton("Ajouter des offres");
+            btnOffres.addActionListener(this);
 
             btnQuitter = createStyledButton("Quitter");
             btnQuitter.addActionListener(this);
@@ -154,11 +159,12 @@ public class Test {
                 btnQuitter.setPreferredSize(new Dimension((screenSize.width / 2) - 10, 100));
                 buttonPanel.add(btnQuitter);
             } else {
-                btnQuitter.setPreferredSize(new Dimension((screenSize.width / 5) - 10, 100));
-                btnGererClients.setPreferredSize(new Dimension((screenSize.width / 5) - 10, 100));
-                btnGererEmployes.setPreferredSize(new Dimension((screenSize.width / 5) - 10, 100));
-                btnGererFilms.setPreferredSize(new Dimension((screenSize.width / 5) - 10, 100));
-                btnGererSeances.setPreferredSize(new Dimension((screenSize.width / 5) - 10, 100));
+                btnQuitter.setPreferredSize(new Dimension((screenSize.width / 6) - 10, 100));
+                btnGererClients.setPreferredSize(new Dimension((screenSize.width / 6) - 10, 100));
+                btnGererEmployes.setPreferredSize(new Dimension((screenSize.width / 6) - 10, 100));
+                btnGererFilms.setPreferredSize(new Dimension((screenSize.width / 6) - 10, 100));
+                btnGererSeances.setPreferredSize(new Dimension((screenSize.width / 6) - 10, 100));
+                btnOffres.setPreferredSize(new Dimension((screenSize.width / 6) - 10, 100));
 
                 JPanel adminPanel = new JPanel(new GridLayout(1, 5)); // Création d'un GridLayout pour aligner les boutons pour l'admin
                 adminPanel.setBackground(Color.DARK_GRAY);
@@ -168,6 +174,7 @@ public class Test {
                 adminPanel.add(btnGererEmployes);
                 adminPanel.add(btnGererFilms);
                 adminPanel.add(btnGererSeances);
+                adminPanel.add(btnOffres);
                 adminPanel.add(btnQuitter);
 
                 buttonPanel.add(adminPanel);
@@ -279,6 +286,22 @@ public class Test {
                                 // Création d'un modèle de tableau pour afficher les séances dans une JTable
                                 String[] entetes = {"ID", "Film", "Date et heure", "Salle", "Prix"};
                                 Object[][] donnees = new Object[seances.size()][5];
+                                double prix = 8;
+                                double reduction = 1;
+
+                                try {
+                                    if((clientDAO.trouverEtatParId(userID)).equals("regulier")) {
+                                        reduction = offresDAO.getOffreRegulier();
+                                    }
+                                    else if((clientDAO.trouverEtatParId(userID)).equals("senior")) {
+                                        reduction = offresDAO.getOffreSenior();
+                                    }
+                                    else if((clientDAO.trouverEtatParId(userID)).equals("enfant")) {
+                                        reduction = offresDAO.getOffreEnfant();
+                                    }
+                                } catch (Exception ex) {
+                                    throw new RuntimeException(ex);
+                                }
 
                                 for (int i = 0; i < seances.size(); i++) {
                                     Seance seance = seances.get(i);
@@ -287,35 +310,36 @@ public class Test {
                                     donnees[i][2] = seance.getHeure();
                                     donnees[i][3] = seance.getSalle();
                                     if((seance.getSalle()).equals("Salle Standard")) {
-                                        donnees[i][4] = 8;
+                                        prix = 8 - 8*(reduction/100);
                                     }
                                     else if((seance.getSalle()).equals("Salle 3D")) {
-                                        donnees[i][4] = 9;
+                                        prix = 9 - 9*(reduction/100);
                                     }
                                     else if((seance.getSalle()).equals("Salle THX")) {
-                                        donnees[i][4] = 10;
+                                        prix = 10 - 10*(reduction/100);
                                     }
                                     else if((seance.getSalle()).equals("Salle UltraAVX")) {
-                                        donnees[i][4] = 11;
+                                        prix = 11 - 11*(reduction/100);
                                     }
                                     else if((seance.getSalle()).equals("Salle Dolby Cinema")) {
-                                        donnees[i][4] = 12;
+                                        prix = 12 - 12*(reduction/100);
                                     }
                                     else if((seance.getSalle()).equals("Salle IMAX")) {
-                                        donnees[i][4] = 13;
+                                        prix = 13 - 13*(reduction/100);
                                     }
                                     else if((seance.getSalle()).equals("Salle D-Box")) {
-                                        donnees[i][4] = 14;
+                                        prix = 14 - 14*(reduction/100);
                                     }
                                     else if((seance.getSalle()).equals("Salle 4DX")) {
-                                        donnees[i][4] = 15;
+                                        prix = 15 - 15*(reduction/100);
                                     }
                                     else if((seance.getSalle()).equals("Salle VIP")) {
-                                        donnees[i][4] = 15;
+                                        prix = 15 - 15*(reduction/100);
                                     }
                                     else if((seance.getSalle()).equals("Salle Gold Class")) {
-                                        donnees[i][4] = 16;
+                                        prix = 16 - 16*(reduction/100);
                                     }
+                                    donnees[i][4] = prix;
                                 }
 
                                 JTable table = new JTable(donnees, entetes);
@@ -335,28 +359,28 @@ public class Test {
                                         throw new RuntimeException(ex);
                                     }
 
-                                    double prix = 8;
+                                    prix = 8;
 
                                     if ((seance1.getSalle()).equals("Salle Standard")) {
-                                        prix = 8;
+                                        prix = 8 - 8*(reduction/100);
                                     } else if ((seance1.getSalle()).equals("Salle 3D")) {
-                                        prix = 9;
+                                        prix = 9 - 9*(reduction/100);
                                     } else if ((seance1.getSalle()).equals("Salle THX")) {
-                                        prix = 10;
+                                        prix = 10 - 10*(reduction/100);
                                     } else if ((seance1.getSalle()).equals("Salle UltraAVX")) {
-                                        prix = 11;
+                                        prix = 11 - 11*(reduction/100);
                                     } else if ((seance1.getSalle()).equals("Salle Dolby Cinema")) {
-                                        prix = 12;
+                                        prix = 12 - 12*(reduction/100);
                                     } else if ((seance1.getSalle()).equals("Salle IMAX")) {
-                                        prix = 13;
+                                        prix = 13 - 13*(reduction/100);
                                     } else if ((seance1.getSalle()).equals("Salle D-Box")) {
-                                        prix = 14;
+                                        prix = 14 - 14*(reduction/100);
                                     } else if ((seance1.getSalle()).equals("Salle 4DX")) {
-                                        prix = 15;
+                                        prix = 15 - 15*(reduction/100);
                                     } else if ((seance1.getSalle()).equals("Salle VIP")) {
-                                        prix = 15;
+                                        prix = 15 - 15*(reduction/100);
                                     } else if ((seance1.getSalle()).equals("Salle Gold Class")) {
-                                        prix = 16;
+                                        prix = 16 - 16*(reduction/100);
                                     }
 
                                     String categorie = JOptionPane.showInputDialog("Entrez la catégorie du billet : ");
@@ -422,10 +446,6 @@ public class Test {
         }
 
 
-
-
-
-
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == btnGererBillets) {
                 new GererBilletsPage(billetDAO, scanner, userID);
@@ -437,6 +457,8 @@ public class Test {
                 new GererFilmsPage(filmDAO, scanner, userID);
             } else if (e.getSource() == btnGererSeances) {
                 new GererSeancesPage(seanceDAO, scanner, userID);
+            } else if (e.getSource() == btnOffres) {
+                new GererOffresPage(offresDAO, scanner, userID);
             } else if (e.getSource() == btnQuitter) {
                 System.out.println("Au revoir !");
                 System.exit(0);
@@ -532,6 +554,86 @@ public class Test {
     }
 
 
+    public static class GererOffresPage extends JFrame implements ActionListener {
+        private OffresDAO offresDAO;
+        private Scanner scanner;
+        private int userID;
+
+        private JButton btnOffreRegulier;
+        private JButton btnOffreSenior;
+        private JButton btnOffreEnfant;
+
+        public GererOffresPage(OffresDAO offresDAO, Scanner scanner, int userID) {
+            this.offresDAO = offresDAO;
+            this.scanner = scanner;
+            this.userID = userID;
+
+            setTitle("Gérer les Offres");
+            setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            setLayout(new GridLayout(4, 1));
+
+            btnOffreRegulier = createStyledButton("Modifier Offre Régulier");
+            btnOffreRegulier.addActionListener(this);
+            add(btnOffreRegulier);
+
+            btnOffreSenior = createStyledButton("Modifier Offre Senior");
+            btnOffreSenior.addActionListener(this);
+            add(btnOffreSenior);
+
+            btnOffreEnfant = createStyledButton("Modifier Offre Enfant");
+            btnOffreEnfant.addActionListener(this);
+            add(btnOffreEnfant);
+
+            setSize(400, 400);
+            setVisible(true);
+        }
+
+        private JButton createStyledButton(String text) {
+            JButton button = new JButton(text);
+            button.setBackground(new Color(255, 215, 0));
+            button.setForeground(Color.WHITE);
+            button.setFocusPainted(false);
+            button.setPreferredSize(new Dimension(200, 100));
+            button.setFont(new Font("Arial", Font.BOLD, 16));
+            button.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            return button;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (e.getSource() == btnOffreRegulier) {
+                modifierOffre("régulier");
+            } else if (e.getSource() == btnOffreSenior) {
+                modifierOffre("sénior");
+            } else if (e.getSource() == btnOffreEnfant) {
+                modifierOffre("enfant");
+            }
+        }
+
+        private void modifierOffre(String categorie) {
+            // Demander à l'utilisateur de saisir la nouvelle valeur de l'offre
+            String nouvelleValeurStr = JOptionPane.showInputDialog(null, "Entrez la nouvelle valeur pour l'offre " + categorie + " :");
+            if (nouvelleValeurStr != null && !nouvelleValeurStr.isEmpty()) {
+                try {
+                    double nouvelleValeur = Double.parseDouble(nouvelleValeurStr);
+                    // Mettre à jour l'offre dans la base de données
+                    if (categorie.equals("régulier")) {
+                        offresDAO.modifierOffreRegulier(nouvelleValeur);
+                    } else if (categorie.equals("sénior")) {
+                        offresDAO.modifierOffreSenior(nouvelleValeur);
+                    } else if (categorie.equals("enfant")) {
+                        offresDAO.modifierOffreEnfant(nouvelleValeur);
+                    }
+                    JOptionPane.showMessageDialog(null, "Offre " + categorie + " mise à jour avec succès !");
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Veuillez saisir une valeur numérique valide !");
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Une erreur s'est produite lors de la mise à jour de l'offre " + categorie + " : " + ex.getMessage());
+                }
+            }
+        }
+    }
+
     public static class GererBilletsPage extends JFrame implements ActionListener {
         private final int userID;
         private BilletDAO billetDAO;
@@ -591,11 +693,27 @@ public class Test {
                 }
 
                 if (seances.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Aucune séance disponible.");
+                    JOptionPane.showMessageDialog(null, "Aucune séance disponible pour ce film.");
                 } else {
                     // Création d'un modèle de tableau pour afficher les séances dans une JTable
                     String[] entetes = {"ID", "Film", "Date et heure", "Salle", "Prix"};
                     Object[][] donnees = new Object[seances.size()][5];
+                    double prix = 8;
+                    double reduction = 1;
+
+                    try {
+                        if((clientDAO.trouverEtatParId(userID)).equals("regulier")) {
+                            reduction = offresDAO.getOffreRegulier();
+                        }
+                        else if((clientDAO.trouverEtatParId(userID)).equals("senior")) {
+                            reduction = offresDAO.getOffreSenior();
+                        }
+                        else if((clientDAO.trouverEtatParId(userID)).equals("enfant")) {
+                            reduction = offresDAO.getOffreEnfant();
+                        }
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
 
                     for (int i = 0; i < seances.size(); i++) {
                         Seance seance = seances.get(i);
@@ -609,43 +727,42 @@ public class Test {
                         } catch (Exception ex) {
                             throw new RuntimeException(ex);
                         }
-
                         donnees[i][0] = seance.getId();
                         donnees[i][1] = titreFilm;
                         donnees[i][2] = seance.getHeure();
                         donnees[i][3] = seance.getSalle();
 
                         if((seance.getSalle()).equals("Salle Standard")) {
-                            donnees[i][4] = 8;
+                            prix = 8 - 8*(reduction/100);
                         }
                         else if((seance.getSalle()).equals("Salle 3D")) {
-                            donnees[i][4] = 9;
+                            prix = 9 - 9*(reduction/100);
                         }
                         else if((seance.getSalle()).equals("Salle THX")) {
-                            donnees[i][4] = 10;
+                            prix = 10 - 10*(reduction/100);
                         }
                         else if((seance.getSalle()).equals("Salle UltraAVX")) {
-                            donnees[i][4] = 11;
+                            prix = 11 - 11*(reduction/100);
                         }
                         else if((seance.getSalle()).equals("Salle Dolby Cinema")) {
-                            donnees[i][4] = 12;
+                            prix = 12 - 12*(reduction/100);
                         }
                         else if((seance.getSalle()).equals("Salle IMAX")) {
-                            donnees[i][4] = 13;
+                            prix = 13 - 13*(reduction/100);
                         }
                         else if((seance.getSalle()).equals("Salle D-Box")) {
-                            donnees[i][4] = 14;
+                            prix = 14 - 14*(reduction/100);
                         }
                         else if((seance.getSalle()).equals("Salle 4DX")) {
-                            donnees[i][4] = 15;
+                            prix = 15 - 15*(reduction/100);
                         }
                         else if((seance.getSalle()).equals("Salle VIP")) {
-                            donnees[i][4] = 15;
+                            prix = 15 - 15*(reduction/100);
                         }
                         else if((seance.getSalle()).equals("Salle Gold Class")) {
-                            donnees[i][4] = 16;
+                            prix = 16 - 16*(reduction/100);
                         }
-
+                        donnees[i][4] = prix;
                     }
 
                     JTable table = new JTable(donnees, entetes);
@@ -665,28 +782,37 @@ public class Test {
                             throw new RuntimeException(ex);
                         }
 
-                        double prix = 8;
+                        prix = 8;
 
-                        if ((seance1.getSalle()).equals("Salle Standard")) {
-                            prix = 8;
-                        } else if ((seance1.getSalle()).equals("Salle 3D")) {
-                            prix = 9;
-                        } else if ((seance1.getSalle()).equals("Salle THX")) {
-                            prix = 10;
-                        } else if ((seance1.getSalle()).equals("Salle UltraAVX")) {
-                            prix = 11;
-                        } else if ((seance1.getSalle()).equals("Salle Dolby Cinema")) {
-                            prix = 12;
-                        } else if ((seance1.getSalle()).equals("Salle IMAX")) {
-                            prix = 13;
-                        } else if ((seance1.getSalle()).equals("Salle D-Box")) {
-                            prix = 14;
-                        } else if ((seance1.getSalle()).equals("Salle 4DX")) {
-                            prix = 15;
-                        } else if ((seance1.getSalle()).equals("Salle VIP")) {
-                            prix = 15;
-                        } else if ((seance1.getSalle()).equals("Salle Gold Class")) {
-                            prix = 16;
+                        if((seance1.getSalle()).equals("Salle Standard")) {
+                            prix = 8 - 8*(reduction/100);
+                        }
+                        else if((seance1.getSalle()).equals("Salle 3D")) {
+                            prix = 9 - 9*(reduction/100);
+                        }
+                        else if((seance1.getSalle()).equals("Salle THX")) {
+                            prix = 10 - 10*(reduction/100);
+                        }
+                        else if((seance1.getSalle()).equals("Salle UltraAVX")) {
+                            prix = 11 - 11*(reduction/100);
+                        }
+                        else if((seance1.getSalle()).equals("Salle Dolby Cinema")) {
+                            prix = 12 - 12*(reduction/100);
+                        }
+                        else if((seance1.getSalle()).equals("Salle IMAX")) {
+                            prix = 13 - 13*(reduction/100);
+                        }
+                        else if((seance1.getSalle()).equals("Salle D-Box")) {
+                            prix = 14 - 14*(reduction/100);
+                        }
+                        else if((seance1.getSalle()).equals("Salle 4DX")) {
+                            prix = 15 - 15*(reduction/100);
+                        }
+                        else if((seance1.getSalle()).equals("Salle VIP")) {
+                            prix = 15 - 15*(reduction/100);
+                        }
+                        else if((seance1.getSalle()).equals("Salle Gold Class")) {
+                            prix = 16 - 16*(reduction/100);
                         }
                         String categorie = JOptionPane.showInputDialog("Entrez la catégorie du billet : ");
 
@@ -1570,10 +1696,5 @@ public class Test {
                 dispose();
             }
         }
-
-
     }
-
-
-
 }

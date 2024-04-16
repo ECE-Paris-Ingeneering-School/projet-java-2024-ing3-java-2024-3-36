@@ -13,4 +13,5 @@ public interface ClientDAO {
     String trouverNomClientParEmailEtMotDePasse(String email, String motDePasse);
     int trouverIDParEmailEtMotDePasse(String email, String motDePasse) throws Exception;
     String trouverEmailParId(int id) throws Exception;
+    String trouverEtatParId(int id) throws Exception;
 }

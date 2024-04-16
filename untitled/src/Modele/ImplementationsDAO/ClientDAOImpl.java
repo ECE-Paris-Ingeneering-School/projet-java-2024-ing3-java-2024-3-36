@@ -68,6 +68,25 @@ public class ClientDAOImpl implements ClientDAO {
         return email;
     }
 
+
+    @Override
+    public String trouverEtatParId(int id) throws Exception {
+        String etat = null;
+        String sql = "SELECT etat FROM clients WHERE id = ?";
+
+        try (Connection connection = ConnectionDatabase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                etat = resultSet.getString("etat");
+            }
+        }
+
+        return etat;
+    }
+
     @Override
     public int trouverIDParEmailEtMotDePasse(String email, String motDePasse) throws Exception {
         int userID = -1; // Valeur par défaut si l'utilisateur n'est pas trouvé
