@@ -4,9 +4,7 @@ import Modele.ImplementationsDAO.*;
 import Modele.InterfaceDAO.*;
 import Modele.Objets.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -388,11 +386,93 @@ public class Test {
 
 
     public static void main(String[] args) {
-        // Initialisez votre ClientDAO ici
+        // Code pour supprimer tous les éléments de la table films
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/projetcinema", "root", "");
+             Statement statement = connection.createStatement()) {
+
+            // Requête pour supprimer tous les éléments de la table films
+            String sqlDelete = "DELETE FROM `films`";
+
+            // Exécution de la requête de suppression
+            statement.executeUpdate(sqlDelete);
+
+            System.out.println("Tous les films ont été supprimés de la base de données.");
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de la suppression des films : " + e.getMessage());
+        }
+
+        // La suite du code pour insérer les nouveaux films
+        // ...
+        String repertoireImages = "";
+
+        // Liste des noms d'affiches des films
+        String[] affiches = {
+                "affiche_inception.jpg",
+                "affiche_le_parrain.jpg",
+                "affiche_forrest_gump.jpg",
+                "affiche_interstellar.jpg",
+                "affiche_la_liste_de_schindler.jpg",
+                "affiche_pulp_fiction.jpg",
+                "affiche_le_seigneur_des_anneaux.jpg",
+                "affiche_le_silence_des_agneaux.jpg",
+                "affiche_fight_club.jpg",
+                "affiche_les_evades.jpg"
+        };
+
+        // Liste des titres, genres, durées, descriptions et réalisateurs des films
+        String[][] films = {
+                {"Inception", "Science-fiction, Action", "148", "Un voleur experimente est charge d'implanter une idee dans l'esprit dun PDG en utilisant linception.", "Christopher Nolan"},
+                {"Le Parrain", "Crime, Drame", "175", "La saga d'une famille de la mafia italo-americaine dirigee par le patriarche Vito Corleone.", "Francis Ford Coppola"},
+                {"Forrest Gump", "Drame, Romance", "142", "La vie de Forrest Gump, un homme simple desprit, qui se retrouve implique dans certains des moments les plus marquants de l'histoire americaine.", "Robert Zemeckis"},
+                {"Interstellar", "Science-fiction, Drame", "169", "Un groupe d'explorateurs voyage a travers un trou de ver dans l'espace pour rechercher une nouvelle planete habitable pour l'humanite.", "Christopher Nolan"},
+                {"La Liste de Schindler", "Biographie, Drame, Histoire", "195", "L'histoire vraie d'Oskar Schindler, un homme d'affaires allemand qui a sauve plus de mille Juifs pendant l'Holocauste en les employant dans ses usines.", "Steven Spielberg"},
+                {"Pulp Fiction", "Crime, Drame", "154", "Une serie d'histoires entrelacees mettant en vedette des gangsters, des boxeurs, des revendeurs et des tueurs a gages dans le Los Angeles des annees 90.", "Quentin Tarantino"},
+                {"Le Seigneur des Anneaux : Le Retour du Roi", "Fantasy, Aventure, Drame", "201", "La conclusion epique de la trilogie du Seigneur des Anneaux alors que les forces de la Terre du Milieu se preparent pour une bataille finale contre Sauron.", "Peter Jackson"},
+                {"Le Silence des Agneaux", "Crime, Drame, Thriller", "118", "Un jeune agent du FBI interroge un psychiatre cannibale emprisonne pour obtenir de laide sur la traque dun tueur en serie actif.", "Jonathan Demme"},
+                {"Fight Club", "Drame", "139", "Un homme anonyme souffrant d'insomnie et son nouvel ami charismatique se lancent dans une aventure de destruction a grande echelle.", "David Fincher"},
+                {"Les Evades", "Drame, Crime", "142", "L'histoire damitie entre deux prisonniers condamnes a perpetuite, Andy Dufresne et Ellis Red Redding, qui cherchent la liberte et la redemption.", "Frank Darabont"}
+        };
+
+        // Insertion de chaque film dans la base de données
+        for (int i = 0; i < affiches.length; i++) {
+            try {
+                // Création d'un objet File pour l'image
+                File imageFile = new File(repertoireImages + "" + affiches[i]);
+
+                // Lecture des données binaires de l'image
+                byte[] data = Files.readAllBytes(imageFile.toPath());
+
+                // Utilisation d'une requête SQL paramétrée pour insérer les données binaires dans la base de données
+                String sql = "INSERT INTO `films` ( `id`,`titre`, `genre`, `duree`, `description`, `realisateur`, `affiche`)\n" +
+                        "VALUES (?,?, ?, ?, ?, ?, ?)";
+
+                try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/projetcinema", "root", "");
+                     PreparedStatement statement = connection.prepareStatement(sql)) {
+
+                    // Définition des paramètres
+                    statement.setInt(1,i);
+                    statement.setString(2, films[i][0]); // Titre
+                    statement.setString(3, films[i][1]); // Genre
+                    statement.setInt(4, Integer.parseInt(films[i][2])); // Durée (convertie en int)
+                    statement.setString(5, films[i][3]); // Description
+                    statement.setString(6, films[i][4]); // Réalisateur
+                    statement.setBytes(7, data); // Données binaires de l'affiche
+
+                    // Exécution de la requête
+                    statement.executeUpdate();
+
+                    System.out.println("Film inséré avec succès dans la base de données : " + films[i][0]);
+                } catch (SQLException e) {
+                    System.out.println("Erreur lors de l'insertion du film dans la base de données : " + e.getMessage());
+                }
+            } catch (IOException e) {
+                System.out.println("Erreur lors de la lecture de l'image : " + e.getMessage());
+            }
+        }
         GererClientsPage.ConnexionPage connexionPage = new GererClientsPage.ConnexionPage(clientDAO);
 
-
     }
+
 
 
 
