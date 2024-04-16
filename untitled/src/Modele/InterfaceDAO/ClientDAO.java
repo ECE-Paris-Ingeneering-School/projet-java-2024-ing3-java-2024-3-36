@@ -12,5 +12,5 @@ public interface ClientDAO {
     void supprimerClient(int id) throws Exception;
     String trouverNomClientParEmailEtMotDePasse(String email, String motDePasse);
     int trouverIDParEmailEtMotDePasse(String email, String motDePasse) throws Exception;
-
+    String trouverEmailParId(int id) throws Exception;
 }

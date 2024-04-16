@@ -7,15 +7,16 @@ public class Film {
     private int duree;
     private String description;
     private String realisateur;
+    private byte[] affiche; // Nouvel attribut pour l'affiche du film
 
-
-    public Film(int id, String titre, String genre, int duree, String description, String realisateur) {
+    public Film(int id, String titre, String genre, int duree, String description, String realisateur, byte[] affiche) {
         this.id = id;
         this.titre = titre;
         this.genre = genre;
         this.duree = duree;
         this.description = description;
         this.realisateur = realisateur;
+        this.affiche = affiche;
     }
 
     public int getId() {
@@ -26,7 +27,7 @@ public class Film {
         this.id = id;
     }
 
-    public static String getTitre() {
+    public  String getTitre() {
         return titre;
     }
 
@@ -66,6 +67,14 @@ public class Film {
         this.realisateur = realisateur;
     }
 
+    public byte[] getAffiche() {
+        return affiche;
+    }
+
+    public void setAffiche(byte[] affiche) {
+        this.affiche = affiche;
+    }
+
     @Override
     public String toString() {
         return "Film{" +
@@ -77,5 +86,4 @@ public class Film {
                 ", realisateur='" + realisateur + '\'' +
                 '}';
     }
-
 }

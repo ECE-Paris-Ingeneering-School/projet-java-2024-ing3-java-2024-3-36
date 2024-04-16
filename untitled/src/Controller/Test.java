@@ -4,10 +4,17 @@ import Modele.ImplementationsDAO.*;
 import Modele.InterfaceDAO.*;
 import Modele.Objets.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -27,8 +34,12 @@ public class Test {
         button.setFocusPainted(false); // Suppression de la bordure autour du texte lorsqu'on clique sur le bouton
         button.setPreferredSize(new Dimension(200, 100)); // Dimensions du bouton (largeur, hauteur)
         button.setFont(new Font("Arial", Font.BOLD, 16)); // Police du texte
+        button.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         return button;
     }
+
+
+
     public static class PageAccueil extends JFrame implements ActionListener {
         private final int userID;
         private JButton btnGererBillets;
@@ -38,11 +49,10 @@ public class Test {
         private JButton btnGererSeances;
         private JButton btnQuitter;
 
-        public PageAccueil(int userID) {
-
+        public PageAccueil(int userID) throws Exception {
             this.userID = userID;
             setTitle("Page d'Accueil");
-
+            String mail = clientDAO.trouverEmailParId(userID);
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
             // Création des boutons
@@ -57,31 +67,146 @@ public class Test {
 
             btnGererFilms = createStyledButton("Gérer les films");
             btnGererFilms.addActionListener(this);
-            //GererSeancesPage
+
             btnGererSeances = createStyledButton("Gérer les Séances");
             btnGererSeances.addActionListener(this);
 
             btnQuitter = createStyledButton("Quitter");
             btnQuitter.addActionListener(this);
 
-            // Ajout des boutons au conteneur
-            JPanel buttonPanel = new JPanel(new GridLayout(1, 5));
-            buttonPanel.add(btnGererBillets);
-            //buttonPanel.add(btnGererClients);
-            //buttonPanel.add(btnGererEmployes);
-            //buttonPanel.add(btnGererFilms);
-            //buttonPanel.add(btnGererSeances);
-            buttonPanel.add(btnQuitter);
-            buttonPanel.setBackground(Color.LIGHT_GRAY);
-            // Ajout du panel de boutons en haut de la fenêtre
+            // Création du label
+            JLabel golmonLabel = new JLabel("Golmon Pathé");
+            golmonLabel.setHorizontalAlignment(JLabel.CENTER);
+            golmonLabel.setVerticalAlignment(JLabel.CENTER); // Centrer verticalement
+            Font font = golmonLabel.getFont();
+            golmonLabel.setFont(new Font(font.getName(), Font.BOLD, 36));
+            golmonLabel.setBackground(Color.DARK_GRAY);
 
-            add(buttonPanel, BorderLayout.NORTH);
+            // Panneau pour le label
+            JPanel labelPanel = new JPanel(new BorderLayout());
+            labelPanel.setBackground(new Color(255, 215, 0));
+            labelPanel.setPreferredSize(new Dimension(getWidth(), 100));
+            labelPanel.add(golmonLabel, BorderLayout.CENTER);
+
+            // Panneau pour les boutons
+            JPanel buttonPanel = createButtonPanel(mail);
+
+            // Création du panneau pour les affiches
+            JPanel posterPanel = createPosterPanel();
+
+            // Création du panneau pour le texte en bas de la fenêtre
+            JPanel footerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); // Utilisation d'un FlowLayout pour centrer le texte
+            footerPanel.setBackground(new Color(255, 215, 0));
+
+            // Création du texte à afficher
+            String footerText = "© 2024 Golmon Pathé. Tous droits réservés.";
+
+            // Création du composant texte
+            JLabel footerLabel = new JLabel(footerText);
+            footerLabel.setForeground(Color.BLACK); // Couleur du texte
+            footerPanel.add(footerLabel);
+
+            // Ajout des panneaux au conteneur principal
+            // Ajout des panneaux au conteneur principal avec un BorderLayout
+            // Panneau pour contenir les éléments
+            JPanel mainPanel = new JPanel(new BorderLayout());
+
+// Ajouter le labelPanel en haut du mainPanel
+            mainPanel.add(labelPanel, BorderLayout.NORTH);
+
+// Créer un panneau pour contenir les boutons et les affiches
+            JPanel centerPanel = new JPanel(new BorderLayout());
+
+// Ajouter les boutons au centre du centerPanel
+            centerPanel.add(buttonPanel, BorderLayout.NORTH);
+
+// Ajouter les affiches en dessous des boutons dans le centerPanel
+            centerPanel.add(posterPanel, BorderLayout.CENTER);
+
+// Ajouter le centerPanel au centre du mainPanel
+            mainPanel.add(centerPanel, BorderLayout.CENTER);
+
+// Ajouter le footerPanel en bas du mainPanel
+            mainPanel.add(footerPanel, BorderLayout.SOUTH);
+
+// Ajouter le mainPanel au contenu de la JFrame
+            add(mainPanel);
+
+
 
             // Maximiser la fenêtre
             setExtendedState(JFrame.MAXIMIZED_BOTH);
 
+            setLocationRelativeTo(null);
+            getContentPane().setBackground(Color.DARK_GRAY);
             setVisible(true);
         }
+
+
+
+        private JPanel createButtonPanel(String mail) {
+            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            buttonPanel.setBackground(Color.DARK_GRAY);
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            if (!mail.equals("admin@admin.fr")) {
+                btnGererBillets.setPreferredSize(new Dimension((screenSize.width / 2) - 10, 100));
+                buttonPanel.add(btnGererBillets);
+                btnQuitter.setPreferredSize(new Dimension((screenSize.width / 2) - 10, 100));
+                buttonPanel.add(btnQuitter);
+            } else {
+                btnQuitter.setPreferredSize(new Dimension((screenSize.width / 5) - 10, 100));
+                btnGererClients.setPreferredSize(new Dimension((screenSize.width / 5) - 10, 100));
+                btnGererEmployes.setPreferredSize(new Dimension((screenSize.width / 5) - 10, 100));
+                btnGererFilms.setPreferredSize(new Dimension((screenSize.width / 5) - 10, 100));
+                btnGererSeances.setPreferredSize(new Dimension((screenSize.width / 5) - 10, 100));
+
+                JPanel adminPanel = new JPanel(new GridLayout(1, 5)); // Création d'un GridLayout pour aligner les boutons pour l'admin
+                adminPanel.setBackground(Color.DARK_GRAY);
+                adminPanel.setPreferredSize(new Dimension(screenSize.width, 100));
+
+                adminPanel.add(btnGererClients);
+                adminPanel.add(btnGererEmployes);
+                adminPanel.add(btnGererFilms);
+                adminPanel.add(btnGererSeances);
+                adminPanel.add(btnQuitter);
+
+                buttonPanel.add(adminPanel);
+            }
+
+            return buttonPanel;
+        }
+
+        private JPanel createPosterPanel() {
+            JPanel posterPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10)); // Utilisation d'un FlowLayout pour aligner les affiches
+            posterPanel.setBackground(Color.DARK_GRAY);
+
+            FilmDAOImpl filmDAO = new FilmDAOImpl(); // Instancier votre DAO
+
+            // Récupérer les données d'image à partir de la méthode récupérerAfficheBytes() de votre DAO
+            List<byte[]> affichesBytes = filmDAO.recupererAfficheBytes();
+
+            // Parcourir la liste des données d'image
+            for (byte[] imageData : affichesBytes) {
+                try (ByteArrayInputStream bis = new ByteArrayInputStream(imageData)) {
+                    Image image = ImageIO.read(bis);
+                    if (image != null) {
+                        System.out.println("Conversion du BLOB en image réussie !");
+                        // Créer un label pour afficher l'image
+                        JLabel posterLabel = new JLabel(new ImageIcon(image));
+                        posterPanel.add(posterLabel);
+                    } else {
+                        System.err.println("Le BLOB ne représente pas une image valide.");
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    System.err.println("Erreur lors de la conversion du BLOB en image : " + e.getMessage());
+                }
+            }
+
+            return posterPanel;
+        }
+
+
 
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == btnGererBillets) {
@@ -101,6 +226,8 @@ public class Test {
         }
 
     }
+
+
     public static void main(String[] args) {
         // Initialisez votre ClientDAO ici
         GererClientsPage.ConnexionPage connexionPage = new GererClientsPage.ConnexionPage(clientDAO);
@@ -185,7 +312,7 @@ public class Test {
                         try {
                             Film film = filmDAO.recupFilm(seance.getFilmId());
                             if (film != null) {
-                                titreFilm = film.getTitre();
+                                titreFilm = film.getTitre(); //PROBLEME RECUPERATioN TITRE
                             }
                         } catch (Exception ex) {
                             throw new RuntimeException(ex);
@@ -244,7 +371,7 @@ public class Test {
                     for (int i = 0; i < billets.size(); i++) {
                         Billet billet = billets.get(i);
                         donnees[i][0] = billet.getId();
-                        donnees[i][1] = billet.getSeanceId();
+                        donnees[i][1] = billet.getSeanceId();// RECUPERER LE TITRE
                         donnees[i][2] = billet.getClientId();
                         donnees[i][3] = billet.getPrix();
                         donnees[i][4] = billet.getCategorie();
@@ -765,7 +892,8 @@ public class Test {
             int duree = Integer.parseInt(JOptionPane.showInputDialog("Entrez la durée du film : "));
             String description = JOptionPane.showInputDialog("Entrez la description du film : ");
             String realisateur = JOptionPane.showInputDialog("Entrez le réalisateur du film : ");
-            Film film = new Film(0, titre, genre, duree, description, realisateur);
+            byte[] affiche = selectAffiche(); // Appel de la méthode pour sélectionner une affiche
+            Film film = new Film(0, titre, genre, duree, description, realisateur, affiche);
             try {
                 filmDAO.ajouterFilm(film);
                 JOptionPane.showMessageDialog(null, "Film ajouté avec succès.");
@@ -847,7 +975,21 @@ public class Test {
             dispose();
         }
     }
-
+        private byte[] selectAffiche() {
+            // Méthode pour sélectionner une affiche
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Choisir une affiche");
+            int selection = fileChooser.showOpenDialog(this);
+            if (selection == JFileChooser.APPROVE_OPTION) {
+                try {
+                    File file = fileChooser.getSelectedFile();
+                    return Files.readAllBytes(file.toPath());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
 
 }
     public static class GererSeancesPage extends JFrame implements ActionListener {

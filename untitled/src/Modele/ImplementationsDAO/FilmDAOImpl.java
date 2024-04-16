@@ -2,6 +2,8 @@ package Modele.ImplementationsDAO;
 
 import Modele.InterfaceDAO.FilmDAO;
 import Modele.Objets.Film;
+
+import java.io.ByteArrayInputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,13 +11,14 @@ import Utils.ConnectionDatabase;
 
 public class FilmDAOImpl implements FilmDAO {
 
-    private static final String INSERT_FILMS_SQL = "INSERT INTO films" + " (titre, genre, duree, description, realisateur) VALUES " +
-            " (?, ?, ?, ?, ?);";
+    // Requête SQL pour insérer un film avec l'attribut Affiche
+    private static final String INSERT_FILMS_SQL = "INSERT INTO films (titre, genre, duree, description, realisateur, Affiche) VALUES (?, ?, ?, ?, ?, ?)";
+    private static final String SELECT_AFFICHE_BYTES = "SELECT Affiche FROM films";
 
-    private static final String SELECT_FILM_BY_ID = "select id,titre,genre,duree,description,realisateur from films where id =?";
-    private static final String SELECT_ALL_FILMS = "select * from films";
-    private static final String DELETE_FILMS_SQL = "delete from films where id = ?;";
-    private static final String UPDATE_FILMS_SQL = "update films set titre = ?, genre= ?, duree =?, description =?, realisateur=? where id = ?;";
+    private static final String SELECT_FILM_BY_ID = "SELECT id, titre, genre, duree, description, realisateur, Affiche FROM films WHERE id = ?";
+    private static final String SELECT_ALL_FILMS = "SELECT id, titre, genre, duree, description, realisateur, Affiche FROM films";
+    private static final String DELETE_FILMS_SQL = "DELETE FROM films WHERE id = ?";
+    private static final String UPDATE_FILMS_SQL = "UPDATE films SET titre = ?, genre = ?, duree = ?, description = ?, realisateur = ?, Affiche = ? WHERE id = ?";
 
     @Override
     public Film recupFilm(int id) {
@@ -31,7 +34,8 @@ public class FilmDAOImpl implements FilmDAO {
                 int duree = rs.getInt("duree");
                 String description = rs.getString("description");
                 String realisateur = rs.getString("realisateur");
-                film = new Film(id, titre, genre, duree, description, realisateur);
+                byte[] afficheBytes = rs.getBytes("Affiche");
+                film = new Film(id, titre, genre, duree, description, realisateur, afficheBytes);
             }
         } catch (SQLException e) {
             printSQLException(e);
@@ -53,12 +57,28 @@ public class FilmDAOImpl implements FilmDAO {
                 int duree = rs.getInt("duree");
                 String description = rs.getString("description");
                 String realisateur = rs.getString("realisateur");
-                films.add(new Film(id, titre, genre, duree, description, realisateur));
+                byte[] afficheBytes = rs.getBytes("Affiche");
+                films.add(new Film(id, titre, genre, duree, description, realisateur, afficheBytes));
             }
         } catch (SQLException e) {
             printSQLException(e);
         }
         return films;
+    }
+    @Override
+    public List<byte[]> recupererAfficheBytes() {
+        List<byte[]> affichesBytes = new ArrayList<>();
+        try (Connection connection = ConnectionDatabase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(SELECT_AFFICHE_BYTES)) {
+
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                affichesBytes.add(rs.getBytes("Affiche"));
+            }
+        } catch (SQLException e) {
+            printSQLException(e);
+        }
+        return affichesBytes;
     }
 
     @Override
@@ -71,6 +91,7 @@ public class FilmDAOImpl implements FilmDAO {
             preparedStatement.setInt(3, film.getDuree());
             preparedStatement.setString(4, film.getDescription());
             preparedStatement.setString(5, film.getRealisateur());
+            preparedStatement.setBlob(6, new ByteArrayInputStream(film.getAffiche()));
 
             rowInserted = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -89,7 +110,8 @@ public class FilmDAOImpl implements FilmDAO {
             statement.setInt(3, film.getDuree());
             statement.setString(4, film.getDescription());
             statement.setString(5, film.getRealisateur());
-            statement.setInt(6, film.getId());
+            statement.setBlob(6, new ByteArrayInputStream(film.getAffiche()));
+            statement.setInt(7, film.getId());
 
             rowUpdated = statement.executeUpdate() > 0;
         } catch (SQLException e) {
