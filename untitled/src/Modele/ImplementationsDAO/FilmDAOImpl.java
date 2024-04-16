@@ -42,6 +42,39 @@ public class FilmDAOImpl implements FilmDAO {
         }
         return film;
     }
+    @Override
+    public int recupererIdFilmParIndex(int index) {
+        int filmId = -1; // Valeur par défaut si aucun film n'est trouvé
+        try (Connection connection = ConnectionDatabase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT id FROM films LIMIT ?, 1");) {
+            preparedStatement.setInt(1, index);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            if (rs.next()) {
+                filmId = rs.getInt("id");
+            }
+        } catch (SQLException e) {
+            printSQLException(e);
+        }
+        return filmId;
+    }
+
+    @Override
+    public String recupererTitreParIndex(int index) {
+        String titre = null;
+        try (Connection connection = ConnectionDatabase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT titre FROM films LIMIT ?, 1");) {
+            preparedStatement.setInt(1, index);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            if (rs.next()) {
+                titre = rs.getString("titre");
+            }
+        } catch (SQLException e) {
+            printSQLException(e);
+        }
+        return titre;
+    }
 
     @Override
     public List<Film> recupAllFilms() {

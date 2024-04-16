@@ -2,7 +2,7 @@ package Modele.Objets;
 
 public class Film {
     private int id;
-    private static String titre;
+    private String titre;
     private String genre;
     private int duree;
     private String description;

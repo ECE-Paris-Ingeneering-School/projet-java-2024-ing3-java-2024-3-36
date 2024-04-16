@@ -47,6 +47,25 @@ public class SeanceDAOImpl implements SeanceDAO {
         }
         return seance;
     }
+    @Override
+    public List<Seance> listerSeancesParFilm(int filmId) throws Exception {
+        List<Seance> seances = new ArrayList<>();
+        try (Connection connection = ConnectionDatabase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM seances WHERE filmId = ?");) {
+            preparedStatement.setInt(1, filmId);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                Timestamp heure = rs.getTimestamp("heure");
+                String salle = rs.getString("salle");
+                seances.add(new Seance(id, filmId, heure.toLocalDateTime(), salle));
+            }
+        } catch (SQLException e) {
+            printSQLException(e);
+        }
+        return seances;
+    }
 
     @Override
     public List<Seance> listerToutesLesSeances() throws Exception {
