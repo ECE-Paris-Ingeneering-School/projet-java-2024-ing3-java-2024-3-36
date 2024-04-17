@@ -531,7 +531,7 @@ public class Test {
                      PreparedStatement statement = connection.prepareStatement(sql)) {
 
                     // Définition des paramètres
-                    statement.setInt(1,i);
+                    statement.setInt(1,i+1);
                     statement.setString(2, films[i][0]); // Titre
                     statement.setString(3, films[i][1]); // Genre
                     statement.setInt(4, Integer.parseInt(films[i][2])); // Durée (convertie en int)
@@ -852,7 +852,7 @@ public class Test {
                         Billet billet = billets.get(i);
                         Seance seance = null;
                         try {
-                            seance = seanceDAO.trouverSeanceParId(billet.getId());
+                            seance = seanceDAO.trouverSeanceParId(billet.getSeanceId());
                         } catch (Exception ex) {
                             throw new RuntimeException(ex);
                         }
