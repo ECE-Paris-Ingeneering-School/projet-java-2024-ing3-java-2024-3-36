@@ -388,15 +388,24 @@ public class Test {
                                     // Création d'un objet Billet avec les données saisies
                                     Billet billet = new Billet(100, seanceId, userID, prix, categorie);
 
-                                    // Appel de la méthode pour ajouter le billet dans la base de données
-                                    try {
-                                        billetDAO.ajouterBillet(billet);
-                                    } catch (Exception ex) {
-                                        throw new RuntimeException(ex);
-                                    }
+                                    FakePaymentPage fakePaymentPage = new FakePaymentPage(prix);
 
-                                    // Affichage d'un message de confirmation
-                                    JOptionPane.showMessageDialog(null, "Billet ajouté avec succès.");
+                                    fakePaymentPage.addWindowListener(new WindowAdapter() {
+                                        @Override
+                                        public void windowClosed(WindowEvent e) {
+                                            if (fakePaymentPage.isPaymentSuccessful()) {
+                                                try {
+                                                    billetDAO.ajouterBillet(billet);
+                                                    JOptionPane.showMessageDialog(null, "Billet ajouté avec succès.");
+                                                } catch (Exception ex) {
+                                                    throw new RuntimeException(ex);
+                                                }
+                                            }
+                                        }
+                                    });
+
+                                    fakePaymentPage.setVisible(true);
+
                                 }
                             }
                         }
@@ -633,7 +642,110 @@ public class Test {
             }
         }
     }
+    public static class FakePaymentPage extends JFrame {
+        private JTextField cardNumberField;
+        private JPasswordField cvvField;
+        private JTextField expiryDateField;
+        private double prixAPayer;
+        private boolean paymentSuccessful;
 
+        public FakePaymentPage(double prixAPayer) {
+            this.prixAPayer = prixAPayer;
+
+            setTitle("Fausse Page de Paiement");
+            setSize(500, 250);
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setLocationRelativeTo(null);
+            setLayout(new GridLayout(5, 2));
+
+            JLabel prixLabel = new JLabel("Prix à payer: " + prixAPayer + " €");
+            prixLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+            JLabel cardNumberLabel = new JLabel("Numéro de carte:");
+            cardNumberField = new JTextField();
+
+            JLabel cvvLabel = new JLabel("CVV:");
+            cvvField = new JPasswordField();
+
+            JLabel expiryDateLabel = new JLabel("Date d'expiration (MM/YY):");
+            expiryDateField = new JTextField();
+
+            JButton validerButton = new JButton("Valider");
+
+            add(prixLabel);
+            add(new JLabel()); // Placeholder
+            add(cardNumberLabel);
+            add(cardNumberField);
+            add(cvvLabel);
+            add(cvvField);
+            add(expiryDateLabel);
+            add(expiryDateField);
+            add(new JLabel()); // Placeholder
+            add(validerButton);
+
+            validerButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    boolean infosValides = false;
+                    while (!infosValides) {
+                        // Simuler la validation des informations de la carte
+                        if (validatePaymentInfo()) {
+                            JOptionPane.showMessageDialog(null, "Paiement de " + prixAPayer + " € réussi!");
+                            paymentSuccessful = true;
+                            dispose(); // Fermer la fenêtre après validation réussie
+                            infosValides = true; // Sortir de la boucle si les informations sont valides
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Informations de paiement invalides.");
+                            infosValides = false; // Rester dans la boucle si les informations sont invalides
+                        }
+                    }
+                }
+            });
+
+            setVisible(true); // Rendre la fenêtre visible après avoir ajouté tous les composants
+        }
+
+        private boolean validatePaymentInfo() {
+            String cardNumber = cardNumberField.getText();
+            String cvv = new String(cvvField.getPassword());
+            String expiryDate = expiryDateField.getText();
+
+            // Vérifier que les champs ne sont pas vides
+            if (cardNumber.isEmpty() || cvv.isEmpty() || expiryDate.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Veuillez remplir tous les champs.");
+                return false;
+            }
+
+            // Vérifier la longueur du numéro de carte
+            if (cardNumber.length() != 16) {
+                JOptionPane.showMessageDialog(null, "Numéro de carte invalide. Assurez-vous qu'il comporte 16 chiffres.");
+                return false;
+            }
+
+            // Vérifier la longueur du CVV
+            if (cvv.length() != 3) {
+                JOptionPane.showMessageDialog(null, "CVV invalide. Assurez-vous qu'il comporte 3 chiffres.");
+                return false;
+            }
+
+            // Vérifier la longueur de la date d'expiration
+            if (expiryDate.length() != 5) {
+                JOptionPane.showMessageDialog(null, "Date d'expiration invalide. Assurez-vous qu'elle soit au format MM/YY.");
+                return false;
+            }
+
+            // Ajoutez ici d'autres validations selon vos besoins
+
+            return true;
+        }
+
+
+        public boolean isPaymentSuccessful() {
+            return paymentSuccessful;
+        }
+
+
+    }
     public static class GererBilletsPage extends JFrame implements ActionListener {
         private final int userID;
         private BilletDAO billetDAO;
@@ -820,14 +932,24 @@ public class Test {
                         Billet billet = new Billet(100, seanceId, userID, prix, categorie);
 
                         // Appel de la méthode pour ajouter le billet dans la base de données
-                        try {
-                            billetDAO.ajouterBillet(billet);
-                        } catch (Exception ex) {
-                            throw new RuntimeException(ex);
-                        }
+                        FakePaymentPage fakePaymentPage = new FakePaymentPage(prix);
 
-                        // Affichage d'un message de confirmation
-                        JOptionPane.showMessageDialog(null, "Billet ajouté avec succès.");
+                        fakePaymentPage.addWindowListener(new WindowAdapter() {
+                            @Override
+                            public void windowClosed(WindowEvent e) {
+                                if (fakePaymentPage.isPaymentSuccessful()) {
+                                    try {
+                                        billetDAO.ajouterBillet(billet);
+                                        JOptionPane.showMessageDialog(null, "Billet ajouté avec succès.");
+                                    } catch (Exception ex) {
+                                        throw new RuntimeException(ex);
+                                    }
+                                }
+                            }
+                        });
+
+                        fakePaymentPage.setVisible(true);
+
                     }
                 }
             }
