@@ -413,7 +413,7 @@ public class Test {
                     titleLabel.setForeground(Color.WHITE); // Définir la couleur du texte en blanc
                     titlePanel.add(titleLabel);
                     titlePanel.setAlignmentX(Component.CENTER_ALIGNMENT); // Centrer horizontalement
-                    posterAndTitlePanel.add(titlePanel);
+                    
 
 // Ajouter le JPanel contenant l'affiche et le titre au centerPanel
                     centerPanel.add(posterAndTitlePanel);
