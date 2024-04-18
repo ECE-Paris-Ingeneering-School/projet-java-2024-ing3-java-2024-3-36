@@ -4,6 +4,16 @@ import Modele.ImplementationsDAO.*;
 import Modele.InterfaceDAO.*;
 import Modele.Objets.*;
 
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+
+import javax.swing.*;
+import java.awt.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.sql.*;
