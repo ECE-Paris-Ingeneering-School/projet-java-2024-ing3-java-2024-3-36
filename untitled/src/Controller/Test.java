@@ -122,14 +122,14 @@ public class Test {
 // Créer un panneau pour contenir les boutons et les affiches
             JPanel centerPanel = new JPanel(new BorderLayout());
 
-// Ajouter les boutons au centre du centerPanel
-            centerPanel.add(buttonPanel, BorderLayout.NORTH);
-
 // Ajouter les affiches en dessous des boutons dans le centerPanel
             centerPanel.add(posterPanel, BorderLayout.CENTER);
 
 // Ajouter le centerPanel au centre du mainPanel
             mainPanel.add(centerPanel, BorderLayout.CENTER);
+            
+// Ajouter les boutons au centre du centerPanel
+            centerPanel.add(buttonPanel, BorderLayout.NORTH);
 
 // Ajouter le footerPanel en bas du mainPanel
             mainPanel.add(footerPanel, BorderLayout.SOUTH);
@@ -910,26 +910,7 @@ public class Test {
                         // Trouver l'index de départ de l'ID
                         int idIndex = selectedOption.indexOf("ID: ") + 4;
 
-// Extraire l'ID du billet sélectionné à partir de la chaîne
-                        int idSuppression = Integer.parseInt(selectedOption.substring(idIndex, selectedOption.indexOf(",", idIndex)));
 
-
-                        // Supprimer le billet sélectionné
-                        try {
-                            billetDAO.supprimerBillet(idSuppression);
-                            JOptionPane.showMessageDialog(null, "Billet supprimé avec succès.");
-                        } catch (Exception ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    }
-                }
-            }
-            else if (e.getSource() == btnRetour) {
-                dispose(); // Ferme la fenêtre actuelle
-            }
-        }
-
-    }
 
 
     public static class GererClientsPage extends JFrame implements ActionListener {
@@ -955,10 +936,6 @@ public class Test {
             btnAjouterClient.addActionListener(this);
             add(btnAjouterClient);
 
-            btnTrouverClient = createStyledButton("Trouver un client par ID");
-            btnTrouverClient.addActionListener(this);
-            add(btnTrouverClient);
-
             btnListerClients = createStyledButton("Lister tous les clients");
             btnListerClients.addActionListener(this);
             add(btnListerClients);
@@ -970,6 +947,10 @@ public class Test {
             btnSupprimerClient = createStyledButton("Supprimer un client");
             btnSupprimerClient.addActionListener(this);
             add(btnSupprimerClient);
+
+            btnTrouverClient = createStyledButton("Trouver un client par ID");
+            btnTrouverClient.addActionListener(this);
+            add(btnTrouverClient);
 
             btnRetour = createStyledButton("Retour au menu principal");
             btnRetour.addActionListener(this);
