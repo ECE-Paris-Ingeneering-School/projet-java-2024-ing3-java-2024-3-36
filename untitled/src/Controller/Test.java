@@ -4,10 +4,19 @@ import Modele.ImplementationsDAO.*;
 import Modele.InterfaceDAO.*;
 import Modele.Objets.*;
 
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.layout.Pane;
+import javafx.scene.media.MediaView;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+import javafx.stage.Stage;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -296,7 +305,7 @@ public class Test {
                                 // Création d'un modèle de tableau pour afficher les séances dans une JTable
                                 String[] entetes = {"ID", "Film", "Date et heure", "Salle", "Prix"};
                                 Object[][] donnees = new Object[seances.size()][5];
-                                double prix = 8;
+                                final double[] prix = {8};
                                 double reduction = 1;
 
                                 try {
@@ -320,47 +329,110 @@ public class Test {
                                     donnees[i][2] = seance.getHeure();
                                     donnees[i][3] = seance.getSalle();
                                     if((seance.getSalle()).equals("Salle Standard")) {
-                                        prix = 8 - 8*(reduction/100);
+                                        prix[0] = 8 - 8*(reduction/100);
                                     }
                                     else if((seance.getSalle()).equals("Salle 3D")) {
-                                        prix = 9 - 9*(reduction/100);
+                                        prix[0] = 9 - 9*(reduction/100);
                                     }
                                     else if((seance.getSalle()).equals("Salle THX")) {
-                                        prix = 10 - 10*(reduction/100);
+                                        prix[0] = 10 - 10*(reduction/100);
                                     }
                                     else if((seance.getSalle()).equals("Salle UltraAVX")) {
-                                        prix = 11 - 11*(reduction/100);
+                                        prix[0] = 11 - 11*(reduction/100);
                                     }
                                     else if((seance.getSalle()).equals("Salle Dolby Cinema")) {
-                                        prix = 12 - 12*(reduction/100);
+                                        prix[0] = 12 - 12*(reduction/100);
                                     }
                                     else if((seance.getSalle()).equals("Salle IMAX")) {
-                                        prix = 13 - 13*(reduction/100);
+                                        prix[0] = 13 - 13*(reduction/100);
                                     }
                                     else if((seance.getSalle()).equals("Salle D-Box")) {
-                                        prix = 14 - 14*(reduction/100);
+                                        prix[0] = 14 - 14*(reduction/100);
                                     }
                                     else if((seance.getSalle()).equals("Salle 4DX")) {
-                                        prix = 15 - 15*(reduction/100);
+                                        prix[0] = 15 - 15*(reduction/100);
                                     }
                                     else if((seance.getSalle()).equals("Salle VIP")) {
-                                        prix = 15 - 15*(reduction/100);
+                                        prix[0] = 15 - 15*(reduction/100);
                                     }
                                     else if((seance.getSalle()).equals("Salle Gold Class")) {
-                                        prix = 16 - 16*(reduction/100);
+                                        prix[0] = 16 - 16*(reduction/100);
                                     }
-                                    donnees[i][4] = prix;
+                                    donnees[i][4] = prix[0];
                                 }
 
+                                String url_ba;
+                                try {
+                                    url_ba = filmDAO.trouverURLParTitre(titres.get(selectedIndex));
+
+                                } catch (Exception ex) {
+                                    throw new RuntimeException(ex);
+                                }
+
+// Appeler la méthode pour afficher la vidéo et la table sur la même fenêtre
+
                                 JTable table = new JTable(donnees, entetes);
-                                JScrollPane scrollPane = new JScrollPane(table);
-                                JOptionPane.showMessageDialog(null, scrollPane, "Liste des séances", JOptionPane.PLAIN_MESSAGE);
+                                table.setDefaultEditor(Object.class, null); // Désactiver l'édition de la table
+
+
+                                SwingUtilities.invokeLater(() -> {
+                                    // Initialisation de JavaFX Toolkit
+                                    JFXPanel fxPanel = new JFXPanel();
+
+                                    // Créer une fenêtre Swing
+                                    JFrame frame = new JFrame("Video Player & Table");
+                                    frame.setSize(800, 600);
+                                    frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+
+                                    // Créer un panneau Swing pour contenir le JFXPanel
+                                    JPanel panel = new JPanel(new BorderLayout());
+                                    frame.add(panel);
+
+                                    Platform.runLater(() -> {
+                                        // Créer un WebView pour afficher la vidéo YouTube
+                                        WebView webView = new WebView();
+
+                                        // Charger la vidéo YouTube dans le WebView
+                                        WebEngine webEngine = webView.getEngine();
+                                        webEngine.load(url_ba);
+
+                                        // Créer un conteneur BorderPane pour organiser le WebView
+                                        BorderPane borderPane = new BorderPane();
+                                        borderPane.setCenter(webView);
+
+                                        // Créer une scène JavaFX et l'ajouter au JFXPanel
+                                        Scene scene = new Scene(borderPane);
+                                        fxPanel.setScene(scene);
+                                    });
+
+                                    // Créer un JScrollPane pour la table
+                                    JScrollPane scrollPane = new JScrollPane(table);
+
+                                    // Ajouter le JScrollPane au panneau Swing
+                                    panel.add(scrollPane, BorderLayout.WEST);
+                                    panel.add(fxPanel, BorderLayout.CENTER);
+
+                                    // Afficher la fenêtre Swing
+                                    frame.setVisible(true);
+                                });
+
+
+                                final int[] selectedRow = {-1};
+
+                                // Ajouter un écouteur pour capturer les clics sur les lignes de la table
+                                double finalReduction = reduction;
+                                table.addMouseListener(new MouseAdapter() {
+                                    @Override
+                                    public void mouseClicked(MouseEvent f) {
+                                        if (f.getClickCount() == 1) {
+                                            selectedRow[0] = table.getSelectedRow();
 
                                 // Obtenir l'index de la ligne sélectionnée
-                                int selectedRow = table.getSelectedRow();
-                                if (selectedRow != -1) {
+                                selectedRow[0] = table.getSelectedRow();
+                                if (selectedRow[0] != -1) {
                                     // Extraire l'ID de la séance sélectionnée
-                                    int seanceId = (int) table.getValueAt(selectedRow, 0);
+                                    int seanceId = (int) table.getValueAt(selectedRow[0], 0);
+
 
                                     Seance seance1 = null;
                                     try {
@@ -369,36 +441,36 @@ public class Test {
                                         throw new RuntimeException(ex);
                                     }
 
-                                    prix = 8;
+                                    prix[0] = 8;
 
                                     if ((seance1.getSalle()).equals("Salle Standard")) {
-                                        prix = 8 - 8*(reduction/100);
+                                        prix[0] = 8 - 8*(finalReduction /100);
                                     } else if ((seance1.getSalle()).equals("Salle 3D")) {
-                                        prix = 9 - 9*(reduction/100);
+                                        prix[0] = 9 - 9*(finalReduction /100);
                                     } else if ((seance1.getSalle()).equals("Salle THX")) {
-                                        prix = 10 - 10*(reduction/100);
+                                        prix[0] = 10 - 10*(finalReduction /100);
                                     } else if ((seance1.getSalle()).equals("Salle UltraAVX")) {
-                                        prix = 11 - 11*(reduction/100);
+                                        prix[0] = 11 - 11*(finalReduction /100);
                                     } else if ((seance1.getSalle()).equals("Salle Dolby Cinema")) {
-                                        prix = 12 - 12*(reduction/100);
+                                        prix[0] = 12 - 12*(finalReduction /100);
                                     } else if ((seance1.getSalle()).equals("Salle IMAX")) {
-                                        prix = 13 - 13*(reduction/100);
+                                        prix[0] = 13 - 13*(finalReduction /100);
                                     } else if ((seance1.getSalle()).equals("Salle D-Box")) {
-                                        prix = 14 - 14*(reduction/100);
+                                        prix[0] = 14 - 14*(finalReduction /100);
                                     } else if ((seance1.getSalle()).equals("Salle 4DX")) {
-                                        prix = 15 - 15*(reduction/100);
+                                        prix[0] = 15 - 15*(finalReduction /100);
                                     } else if ((seance1.getSalle()).equals("Salle VIP")) {
-                                        prix = 15 - 15*(reduction/100);
+                                        prix[0] = 15 - 15*(finalReduction /100);
                                     } else if ((seance1.getSalle()).equals("Salle Gold Class")) {
-                                        prix = 16 - 16*(reduction/100);
+                                        prix[0] = 16 - 16*(finalReduction /100);
                                     }
 
                                     String categorie = JOptionPane.showInputDialog("Entrez la catégorie du billet : ");
 
                                     // Création d'un objet Billet avec les données saisies
-                                    Billet billet = new Billet(100, seanceId, userID, prix, categorie);
+                                    Billet billet = new Billet(100, seanceId, userID, prix[0], categorie);
 
-                                    FakePaymentPage fakePaymentPage = new FakePaymentPage(prix);
+                                    FakePaymentPage fakePaymentPage = new FakePaymentPage(prix[0]);
 
                                     fakePaymentPage.addWindowListener(new WindowAdapter() {
                                         @Override
@@ -417,6 +489,9 @@ public class Test {
                                     fakePaymentPage.setVisible(true);
 
                                 }
+                                        }
+                                    }
+                                });
                             }
                         }
                     });
@@ -488,87 +563,6 @@ public class Test {
 
 
     public static void main(String[] args) {
-        // Code pour supprimer tous les éléments de la table films
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/projetcinema", "root", "");
-             Statement statement = connection.createStatement()) {
-
-            // Requête pour supprimer tous les éléments de la table films
-            String sqlDelete = "DELETE FROM `films`";
-
-            // Exécution de la requête de suppression
-            statement.executeUpdate(sqlDelete);
-
-            System.out.println("Tous les films ont été supprimés de la base de données.");
-        } catch (SQLException e) {
-            System.out.println("Erreur lors de la suppression des films : " + e.getMessage());
-        }
-
-        String repertoireImages = "";
-
-        // Liste des noms d'affiches des films
-        String[] affiches = {
-                "affiche_inception.jpg",
-                "affiche_le_parrain.jpg",
-                "affiche_forrest_gump.jpg",
-                "affiche_interstellar.jpg",
-                "affiche_la_liste_de_schindler.jpg",
-                "affiche_pulp_fiction.jpg",
-                "affiche_le_seigneur_des_anneaux.jpg",
-                "affiche_le_silence_des_agneaux.jpg",
-                "affiche_fight_club.jpg",
-                "affiche_les_evades.jpg"
-        };
-
-        // Liste des titres, genres, durées, descriptions et réalisateurs des films
-        String[][] films = {
-                {"Inception", "Science-fiction, Action", "148", "Un voleur experimente est charge d'implanter une idee dans l'esprit dun PDG en utilisant linception.", "Christopher Nolan"},
-                {"Le Parrain", "Crime, Drame", "175", "La saga d'une famille de la mafia italo-americaine dirigee par le patriarche Vito Corleone.", "Francis Ford Coppola"},
-                {"Forrest Gump", "Drame, Romance", "142", "La vie de Forrest Gump, un homme simple desprit, qui se retrouve implique dans certains des moments les plus marquants de l'histoire americaine.", "Robert Zemeckis"},
-                {"Interstellar", "Science-fiction, Drame", "169", "Un groupe d'explorateurs voyage a travers un trou de ver dans l'espace pour rechercher une nouvelle planete habitable pour l'humanite.", "Christopher Nolan"},
-                {"La Liste de Schindler", "Biographie, Drame, Histoire", "195", "L'histoire vraie d'Oskar Schindler, un homme d'affaires allemand qui a sauve plus de mille Juifs pendant l'Holocauste en les employant dans ses usines.", "Steven Spielberg"},
-                {"Pulp Fiction", "Crime, Drame", "154", "Une serie d'histoires entrelacees mettant en vedette des gangsters, des boxeurs, des revendeurs et des tueurs a gages dans le Los Angeles des annees 90.", "Quentin Tarantino"},
-                {"Le Seigneur des Anneaux : Le Retour du Roi", "Fantasy, Aventure, Drame", "201", "La conclusion epique de la trilogie du Seigneur des Anneaux alors que les forces de la Terre du Milieu se preparent pour une bataille finale contre Sauron.", "Peter Jackson"},
-                {"Le Silence des Agneaux", "Crime, Drame, Thriller", "118", "Un jeune agent du FBI interroge un psychiatre cannibale emprisonne pour obtenir de laide sur la traque dun tueur en serie actif.", "Jonathan Demme"},
-                {"Fight Club", "Drame", "139", "Un homme anonyme souffrant d'insomnie et son nouvel ami charismatique se lancent dans une aventure de destruction a grande echelle.", "David Fincher"},
-                {"Les Evades", "Drame, Crime", "142", "L'histoire damitie entre deux prisonniers condamnes a perpetuite, Andy Dufresne et Ellis Red Redding, qui cherchent la liberte et la redemption.", "Frank Darabont"}
-        };
-
-        // Insertion de chaque film dans la base de données
-        for (int i = 0; i < affiches.length; i++) {
-            try {
-                // Création d'un objet File pour l'image
-                File imageFile = new File(repertoireImages + "" + affiches[i]);
-
-                // Lecture des données binaires de l'image
-                byte[] data = Files.readAllBytes(imageFile.toPath());
-
-                // Utilisation d'une requête SQL paramétrée pour insérer les données binaires dans la base de données
-                String sql = "INSERT INTO `films` ( `id`,`titre`, `genre`, `duree`, `description`, `realisateur`, `affiche`)\n" +
-                        "VALUES (?,?, ?, ?, ?, ?, ?)";
-
-                try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/projetcinema", "root", "");
-                     PreparedStatement statement = connection.prepareStatement(sql)) {
-
-                    // Définition des paramètres
-                    statement.setInt(1,i+1);
-                    statement.setString(2, films[i][0]); // Titre
-                    statement.setString(3, films[i][1]); // Genre
-                    statement.setInt(4, Integer.parseInt(films[i][2])); // Durée (convertie en int)
-                    statement.setString(5, films[i][3]); // Description
-                    statement.setString(6, films[i][4]); // Réalisateur
-                    statement.setBytes(7, data); // Données binaires de l'affiche
-
-                    // Exécution de la requête
-                    statement.executeUpdate();
-
-                    System.out.println("Film inséré avec succès dans la base de données : " + films[i][0]);
-                } catch (SQLException e) {
-                    System.out.println("Erreur lors de l'insertion du film dans la base de données : " + e.getMessage());
-                }
-            } catch (IOException e) {
-                System.out.println("Erreur lors de la lecture de l'image : " + e.getMessage());
-            }
-        }
         GererClientsPage.ConnexionPage connexionPage = new GererClientsPage.ConnexionPage(clientDAO);
     }
 
@@ -842,10 +836,7 @@ public class Test {
                         // Récupérer le titre du film associé à cette séance
                         String titreFilm = null;
                         try {
-                            Film film = filmDAO.recupFilm(seance.getFilmId());
-                            if (film != null) {
-                                titreFilm = film.getTitre(); //PROBLEME RECUPERATioN TITRE
-                            }
+                            titreFilm = filmDAO.trouverTitreParId(seance.getFilmId());
                         } catch (Exception ex) {
                             throw new RuntimeException(ex);
                         }

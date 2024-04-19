@@ -7,6 +7,12 @@ public interface FilmDAO {
     List<byte[]> recupererAfficheBytes();
     String recupererTitreParIndex(int index);
     Film recupFilm(int id);
+
+
+    String trouverTitreParId(int id) throws Exception;
+
+    String trouverURLParTitre(String titre) throws Exception;
+
     List<Film> recupAllFilms();
     boolean ajouterFilm(Film film);
     boolean updateFilm(Film film);

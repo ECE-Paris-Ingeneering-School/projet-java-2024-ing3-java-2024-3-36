@@ -77,6 +77,40 @@ public class FilmDAOImpl implements FilmDAO {
     }
 
     @Override
+    public String trouverTitreParId(int id) throws Exception {
+        String titre = null;
+        String sql = "SELECT titre FROM films WHERE id = ?";
+
+        try (Connection connection = ConnectionDatabase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                titre = resultSet.getString("titre");
+            }
+        }
+        return titre;
+    }
+
+    @Override
+    public String trouverURLParTitre(String titre) throws Exception {
+        String url_ba = null;
+        String sql = "SELECT url_ba FROM films WHERE titre = ?";
+
+        try (Connection connection = ConnectionDatabase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, titre);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                url_ba = resultSet.getString("url_ba");
+            }
+        }
+        return url_ba;
+    }
+
+    @Override
     public List<Film> recupAllFilms() {
         List<Film> films = new ArrayList<>();
         try (Connection connection = ConnectionDatabase.getConnection();
