@@ -13,6 +13,8 @@ public interface FilmDAO {
 
     String trouverURLParTitre(String titre) throws Exception;
 
+    int recupererIdFilmParTitre(String titre) throws Exception;
+
     List<Film> recupAllFilms();
     boolean ajouterFilm(Film film);
     boolean updateFilm(Film film);

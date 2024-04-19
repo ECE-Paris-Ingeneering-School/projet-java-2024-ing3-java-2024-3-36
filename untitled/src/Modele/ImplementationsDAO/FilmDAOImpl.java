@@ -111,6 +111,23 @@ public class FilmDAOImpl implements FilmDAO {
     }
 
     @Override
+    public int recupererIdFilmParTitre(String titre) throws Exception {
+        int id = -1;
+        String sql = "SELECT id FROM films WHERE titre = ?";
+
+        try (Connection connection = ConnectionDatabase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, titre);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                id = resultSet.getInt("id");
+            }
+        }
+        return id;
+    }
+
+    @Override
     public List<Film> recupAllFilms() {
         List<Film> films = new ArrayList<>();
         try (Connection connection = ConnectionDatabase.getConnection();

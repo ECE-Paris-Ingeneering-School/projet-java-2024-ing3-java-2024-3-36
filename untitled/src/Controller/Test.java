@@ -289,7 +289,12 @@ public class Test {
                             // Récupérer l'index de l'affiche cliquée
                             int selectedIndex = affiches.indexOf(posterLabel.getIcon());
                             // Récupérer l'ID du film associé à cette affiche
-                            int selectedFilmId = filmDAO.recupererIdFilmParIndex(selectedIndex);
+                            int selectedFilmId = 0;
+                            try {
+                                selectedFilmId = filmDAO.recupererIdFilmParTitre(titres.get(selectedIndex));
+                            } catch (Exception ex) {
+                                throw new RuntimeException(ex);
+                            }
                             // Récupérer les séances du film sélectionné
                             List<Seance> seances = null;
                             try {
