@@ -663,7 +663,7 @@ public class Test {
 
             setTitle("Fausse Page de Paiement");
             setSize(500, 250);
-            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             setLocationRelativeTo(null);
             setLayout(new GridLayout(5, 2));
 
@@ -695,18 +695,12 @@ public class Test {
             validerButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    boolean infosValides = false;
-                    while (!infosValides) {
-                        // Simuler la validation des informations de la carte
-                        if (validatePaymentInfo()) {
-                            JOptionPane.showMessageDialog(null, "Paiement de " + prixAPayer + " € réussi!");
-                            paymentSuccessful = true;
-                            dispose(); // Fermer la fenêtre après validation réussie
-                            infosValides = true; // Sortir de la boucle si les informations sont valides
-                        } else {
-                            JOptionPane.showMessageDialog(null, "Informations de paiement invalides.");
-                            infosValides = false; // Rester dans la boucle si les informations sont invalides
-                        }
+                    if (validatePaymentInfo()) {
+                        JOptionPane.showMessageDialog(null, "Paiement de " + prixAPayer + " € réussi!");
+                        paymentSuccessful = true;
+                        dispose();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Informations de paiement invalides.");
                     }
                 }
             });
