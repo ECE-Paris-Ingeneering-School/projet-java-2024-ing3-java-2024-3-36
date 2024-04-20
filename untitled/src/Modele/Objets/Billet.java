@@ -5,14 +5,12 @@ public class Billet {
     private int seanceId;
     private int clientId;
     private double prix;
-    private String categorie;
 
-    public Billet(int id, int seanceId, int clientId, double prix, String categorie) {
+    public Billet(int id, int seanceId, int clientId, double prix) {
         this.id = id;
         this.seanceId = seanceId;
         this.clientId = clientId;
         this.prix = prix;
-        this.categorie = categorie;
     }
 
 
@@ -50,14 +48,6 @@ public class Billet {
         this.prix = prix;
     }
 
-    public String getCategorie() {
-        return categorie;
-    }
-
-    public void setCategorie(String categorie) {
-        this.categorie = categorie;
-    }
-
     @Override
     public String toString() {
         return "Billet{" +
@@ -65,7 +55,6 @@ public class Billet {
                 ", seanceId=" + seanceId +
                 ", clientId=" + clientId +
                 ", prix=" + prix +
-                ", categorie='" + categorie + '\'' +
                 '}';
     }
 }

@@ -470,10 +470,13 @@ public class Test {
                                         prix[0] = 16 - 16*(finalReduction /100);
                                     }
 
-                                    String categorie = JOptionPane.showInputDialog("Entrez la catégorie du billet : ");
+                                    Billet billet;
 
-                                    // Création d'un objet Billet avec les données saisies
-                                    Billet billet = new Billet(100, seanceId, userID, prix[0], categorie);
+                                    try {
+                                        if (!(clientDAO.trouverEmailParId(userID)).equals("admin@admin.fr")) {
+                                            // Création d'un objet Billet avec les données saisies
+                                            billet = new Billet(100, seanceId, userID, prix[0]);
+
 
                                     FakePaymentPage fakePaymentPage = new FakePaymentPage(prix[0]);
 
@@ -492,6 +495,18 @@ public class Test {
                                     });
 
                                     fakePaymentPage.setVisible(true);
+                                        }
+                                        else {
+                                            int clientID = Integer.parseInt(JOptionPane.showInputDialog("Entrez l'ID du client du billet : "));
+                                            // Création d'un objet Billet avec les données saisies
+                                            billet = new Billet(100, seanceId, clientID, prix[0]);
+                                            billetDAO.ajouterBillet(billet);
+                                            JOptionPane.showMessageDialog(null, "Billet ajouté avec succès.");
+
+                                        }
+                                    } catch (Exception ex) {
+                                        throw new RuntimeException(ex);
+                                    }
 
                                 }
                                         }
@@ -580,6 +595,8 @@ public class Test {
         private JButton btnOffreRegulier;
         private JButton btnOffreSenior;
         private JButton btnOffreEnfant;
+        private JButton btnRetour;
+
 
         public GererOffresPage(OffresDAO offresDAO, Scanner scanner, int userID) {
             this.offresDAO = offresDAO;
@@ -601,6 +618,10 @@ public class Test {
             btnOffreEnfant = createStyledButton("Modifier Offre Enfant");
             btnOffreEnfant.addActionListener(this);
             add(btnOffreEnfant);
+
+            btnRetour = createStyledButton("Retour au menu principal");
+            btnRetour.addActionListener(this);
+            add(btnRetour);
 
             setSize(400, 400);
             setVisible(true);
@@ -625,6 +646,8 @@ public class Test {
                 modifierOffre("sénior");
             } else if (e.getSource() == btnOffreEnfant) {
                 modifierOffre("enfant");
+            } else if (e.getSource() == btnRetour) {
+                dispose(); //Ferme la fenêtre actuelle
             }
         }
 
@@ -634,6 +657,12 @@ public class Test {
             if (nouvelleValeurStr != null && !nouvelleValeurStr.isEmpty()) {
                 try {
                     double nouvelleValeur = Double.parseDouble(nouvelleValeurStr);
+
+                    // Vérifier si la nouvelle valeur est comprise entre 0 et 100
+                    if (nouvelleValeur < 0 || nouvelleValeur > 100) {
+                        throw new IllegalArgumentException("La valeur doit être comprise entre 0 et 100 !");
+                    }
+
                     // Mettre à jour l'offre dans la base de données
                     if (categorie.equals("régulier")) {
                         offresDAO.modifierOffreRegulier(nouvelleValeur);
@@ -884,6 +913,7 @@ public class Test {
                     }
 
                     JTable table = new JTable(donnees, entetes);
+                    table.setDefaultEditor(Object.class, null); // Désactiver l'édition de la table
                     JScrollPane scrollPane = new JScrollPane(table);
                     JOptionPane.showMessageDialog(null, scrollPane, "Liste des séances", JOptionPane.PLAIN_MESSAGE);
 
@@ -932,10 +962,8 @@ public class Test {
                         else if((seance1.getSalle()).equals("Salle Gold Class")) {
                             prix = 16 - 16*(reduction/100);
                         }
-                        String categorie = JOptionPane.showInputDialog("Entrez la catégorie du billet : ");
 
-                        // Création d'un objet Billet avec les données saisies
-                        Billet billet = new Billet(100, seanceId, userID, prix, categorie);
+                        Billet billet = new Billet(100, seanceId, userID, prix);
 
                         // Appel de la méthode pour ajouter le billet dans la base de données
                         FakePaymentPage fakePaymentPage = new FakePaymentPage(prix);
@@ -1000,6 +1028,7 @@ public class Test {
                     }
 
                     JTable table = new JTable(donnees, entetes);
+                    table.setDefaultEditor(Object.class, null); // Désactiver l'édition de la table
                     JScrollPane scrollPane = new JScrollPane(table);
                     JOptionPane.showMessageDialog(null, scrollPane, "Liste des billets de l'utilisateur", JOptionPane.PLAIN_MESSAGE);
                 }
@@ -1026,7 +1055,7 @@ public class Test {
                     for (int i = 0; i < billetsUtilisateur.size(); i++) {
                         Billet billet = billetsUtilisateur.get(i);
                         optionsBillets[i] = "ID: " + billet.getId() + ", Séance ID: " + billet.getSeanceId() +
-                                ", Prix: " + billet.getPrix() + ", Catégorie: " + billet.getCategorie();
+                                ", Prix: " + billet.getPrix();
                     }
 
                     // Afficher la boîte de dialogue pour sélectionner un billet à supprimer
@@ -1308,6 +1337,7 @@ public class Test {
                     }
 
                     JTable table = new JTable(donnees, entetes);
+                    table.setDefaultEditor(Object.class, null); // Désactiver l'édition de la table
                     JScrollPane scrollPane = new JScrollPane(table);
                     JOptionPane.showMessageDialog(null, scrollPane, "Liste des clients", JOptionPane.PLAIN_MESSAGE);
                 }
@@ -1452,6 +1482,7 @@ public class Test {
                     }
 
                     JTable table = new JTable(donnees, entetes);
+                    table.setDefaultEditor(Object.class, null); // Désactiver l'édition de la table
                     JScrollPane scrollPane = new JScrollPane(table);
                     JOptionPane.showMessageDialog(null, scrollPane, "Liste des employés", JOptionPane.PLAIN_MESSAGE);
                 }
@@ -1592,6 +1623,7 @@ public class Test {
                 }
 
                 JTable table = new JTable(donnees, entetes);
+                table.setDefaultEditor(Object.class, null); // Désactiver l'édition de la table
                 JScrollPane scrollPane = new JScrollPane(table);
                 JOptionPane.showMessageDialog(null, scrollPane, "Liste des films", JOptionPane.PLAIN_MESSAGE);
             }
@@ -1778,6 +1810,7 @@ public class Test {
                     }
 
                     JTable table = new JTable(donnees, entetes);
+                    table.setDefaultEditor(Object.class, null); // Désactiver l'édition de la table
                     JScrollPane scrollPane = new JScrollPane(table);
                     JOptionPane.showMessageDialog(null, scrollPane, "Liste des séances", JOptionPane.PLAIN_MESSAGE);
                 }
