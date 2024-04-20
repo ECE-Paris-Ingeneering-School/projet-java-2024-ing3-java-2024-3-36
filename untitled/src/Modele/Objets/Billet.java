@@ -7,12 +7,11 @@ public class Billet {
     private double prix;
     private String categorie;
 
-    public Billet(int id, int seanceId, int clientId, double prix, String categorie) {
+    public Billet(int id, int seanceId, int clientId, double prix) {
         this.id = id;
         this.seanceId = seanceId;
         this.clientId = clientId;
         this.prix = prix;
-        this.categorie = categorie;
     }
 
 
@@ -48,14 +47,6 @@ public class Billet {
 
     public void setPrix(double prix) {
         this.prix = prix;
-    }
-
-    public String getCategorie() {
-        return categorie;
-    }
-
-    public void setCategorie(String categorie) {
-        this.categorie = categorie;
     }
 
     @Override

@@ -9,13 +9,13 @@ import Utils.ConnectionDatabase;
 
 public class BilletDAOImpl implements BilletDAO {
 
-    private static final String INSERT_BILLETS_SQL = "INSERT INTO billets" + " (seanceId, clientId, prix, categorie) VALUES " +
+    private static final String INSERT_BILLETS_SQL = "INSERT INTO billets" + " (seanceId, clientId, prix, ) VALUES " +
             " (?, ?, ?, ?);";
 
-    private static final String SELECT_BILLET_BY_ID = "SELECT id, seanceId, clientId, prix, categorie FROM billets WHERE id = ?";
+    private static final String SELECT_BILLET_BY_ID = "SELECT id, seanceId, clientId, prix,  FROM billets WHERE id = ?";
     private static final String SELECT_ALL_BILLETS = "SELECT * FROM billets";
     private static final String DELETE_BILLETS_SQL = "DELETE FROM billets WHERE id = ?;";
-    private static final String UPDATE_BILLETS_SQL = "UPDATE billets SET seanceId = ?, clientId = ?, prix = ?, categorie = ? WHERE id = ?;";
+    private static final String UPDATE_BILLETS_SQL = "UPDATE billets SET seanceId = ?, clientId = ?, prix = ?,  = ? WHERE id = ?;";
 
 
     @Override
@@ -26,7 +26,7 @@ public class BilletDAOImpl implements BilletDAO {
             preparedStatement.setInt(1, billet.getSeanceId());
             preparedStatement.setInt(2, billet.getClientId());
             preparedStatement.setDouble(3, billet.getPrix());
-            preparedStatement.setString(4, billet.getCategorie());
+
 
             int affectedRows = preparedStatement.executeUpdate();
 
@@ -62,8 +62,8 @@ public class BilletDAOImpl implements BilletDAO {
                 int seanceId = rs.getInt("seanceId");
                 int clientId = rs.getInt("clientId");
                 double prix = rs.getDouble("prix");
-                String categorie = rs.getString("categorie");
-                billet = new Billet(id, seanceId, clientId, prix, categorie);
+
+                billet = new Billet(id, seanceId, clientId, prix);
             }
         } catch (SQLException e) {
             printSQLException(e);
@@ -85,9 +85,9 @@ public class BilletDAOImpl implements BilletDAO {
                 int seanceId = resultSet.getInt("seanceId");
                 int clientIdFromDB = resultSet.getInt("clientId");
                 double prix = resultSet.getDouble("prix");
-                String categorie = resultSet.getString("categorie");
 
-                Billet billet = new Billet(id, seanceId, clientIdFromDB, prix, categorie);
+
+                Billet billet = new Billet(id, seanceId, clientIdFromDB, prix);
                 billets.add(billet);
             }
         }
@@ -107,8 +107,8 @@ public class BilletDAOImpl implements BilletDAO {
                 int seanceId = rs.getInt("seanceId");
                 int clientId = rs.getInt("clientId");
                 double prix = rs.getDouble("prix");
-                String categorie = rs.getString("categorie");
-                billets.add(new Billet(id,seanceId, clientId, prix, categorie));
+
+                billets.add(new Billet(id,seanceId, clientId, prix ));
             }
         } catch (SQLException e) {
             printSQLException(e);
@@ -123,7 +123,6 @@ public class BilletDAOImpl implements BilletDAO {
             statement.setInt(1, billet.getSeanceId());
             statement.setInt(2, billet.getClientId());
             statement.setDouble(3, billet.getPrix());
-            statement.setString(4, billet.getCategorie());
             statement.setInt(5, billet.getId());
 
             statement.executeUpdate();
