@@ -79,7 +79,9 @@ public  class GererFilmsPage extends JFrame implements ActionListener {
                     filmDAO.ajouterFilm(film);
                     JOptionPane.showMessageDialog(null, "Film ajouté avec succès.");
 
+                    
                     new AcceuilVue(clientDAO.trouverEmailParId(userID),userID,this );
+
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Une erreur est survenue : " + ex.getMessage());
                 }

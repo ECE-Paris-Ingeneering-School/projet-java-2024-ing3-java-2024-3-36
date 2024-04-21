@@ -185,5 +185,9 @@ public class AcceuilVue extends JFrame {
         return buttonPanel;
     }
 
+    public void closeWindow() {
+        dispose();
+    }
+
 
 }

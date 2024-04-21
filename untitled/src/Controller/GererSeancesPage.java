@@ -89,7 +89,36 @@ public  class GererSeancesPage extends JFrame implements ActionListener {
                         donnees[i][1] = s.getFilmId();
                         donnees[i][2] = s.getHeure();
                         donnees[i][3] = s.getSalle();
-                        donnees[i][4] = 10;
+                        if((s.getSalle()).equals("Salle Standard")) {
+                            donnees[i][4] = 8;
+                        }
+                        else if((s.getSalle()).equals("Salle 3D")) {
+                            donnees[i][4] = 9;
+                        }
+                        else if((s.getSalle()).equals("Salle THX")) {
+                            donnees[i][4] = 10;
+                        }
+                        else if((s.getSalle()).equals("Salle UltraAVX")) {
+                            donnees[i][4] = 11;
+                        }
+                        else if((s.getSalle()).equals("Salle Dolby Cinema")) {
+                            donnees[i][4] = 12;
+                        }
+                        else if((s.getSalle()).equals("Salle IMAX")) {
+                            donnees[i][4] = 13;
+                        }
+                        else if((s.getSalle()).equals("Salle D-Box")) {
+                            donnees[i][4] = 14;
+                        }
+                        else if((s.getSalle()).equals("Salle 4DX")) {
+                            donnees[i][4] = 15;
+                        }
+                        else if((s.getSalle()).equals("Salle VIP")) {
+                            donnees[i][4] = 15;
+                        }
+                        else if((s.getSalle()).equals("Salle Gold Class")) {
+                            donnees[i][4] = 16;
+                        }
                     }
                     JTable table = new JTable(donnees, entetes);
                     JScrollPane scrollPane = new JScrollPane(table);
