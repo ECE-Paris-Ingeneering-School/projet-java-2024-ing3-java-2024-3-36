@@ -17,7 +17,7 @@ public class Main {
     static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
 
-        GererClientsPage.ConnexionPage connexionPage = new GererClientsPage.ConnexionPage(clientDAO,billetDAO,employeDAO,filmDAO,seanceDAO,offresDAO,scanner);
+        ConnexionPage connexionPage = new ConnexionPage(clientDAO,billetDAO,employeDAO,filmDAO,seanceDAO,offresDAO,scanner);
         connexionPage.setVisible(true);
     }
 }
