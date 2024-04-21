@@ -17,13 +17,10 @@ import java.util.Scanner;
 
 public class OffresVue extends JFrame{
 
-
     private JButton btnRetour;
     private JButton btnOffreRegulier;
     private JButton btnOffreSenior;
     private JButton btnOffreEnfant;
-
-
 
     private JButton createStyledButton(String text) {
         JButton button = new JButton(text);
