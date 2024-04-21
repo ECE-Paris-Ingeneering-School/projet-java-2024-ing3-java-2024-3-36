@@ -692,7 +692,7 @@ public class Test {
 
             setTitle("Fausse Page de Paiement");
             setSize(500, 250);
-            setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
             setLocationRelativeTo(null);
             setLayout(new GridLayout(5, 2));
 
