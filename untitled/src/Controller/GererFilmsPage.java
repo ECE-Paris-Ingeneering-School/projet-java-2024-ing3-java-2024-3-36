@@ -92,7 +92,8 @@ public  class GererFilmsPage extends JFrame implements ActionListener {
             String description = JOptionPane.showInputDialog("Entrez la description du film : ");
             String realisateur = JOptionPane.showInputDialog("Entrez le réalisateur du film : ");
             byte[] affiche = selectAffiche(); // Appel de la méthode pour sélectionner une affiche
-            Film film = new Film(0, titre, genre, duree, description, realisateur, affiche);
+            String url_ba = JOptionPane.showInputDialog("Entrez l'URL de la Bande Annonce du film : ");
+            Film film = new Film(0, titre, genre, duree, description, realisateur, affiche, url_ba);
             try {
                 filmDAO.ajouterFilm(film);
                 JOptionPane.showMessageDialog(null, "Film ajouté avec succès.");
@@ -148,12 +149,14 @@ public  class GererFilmsPage extends JFrame implements ActionListener {
                 int nouvelleDuree = Integer.parseInt(JOptionPane.showInputDialog("Entrez la nouvelle durée du film : "));
                 String nouvelleDescription = JOptionPane.showInputDialog("Entrez la nouvelle description du film : ");
                 String nouveauRealisateur = JOptionPane.showInputDialog("Entrez le nouveau réalisateur du film : ");
+                String nouveauUrl_ba = JOptionPane.showInputDialog("Entrez le nouveau URL de la Bande Annoce du film : ");
 
                 film.setTitre(nouveauTitre);
                 film.setGenre(nouveauGenre);
                 film.setDuree(nouvelleDuree);
                 film.setDescription(nouvelleDescription);
                 film.setRealisateur(nouveauRealisateur);
+                film.setUrl_ba(nouveauUrl_ba);
 
                 try {
                     filmDAO.updateFilm(film);

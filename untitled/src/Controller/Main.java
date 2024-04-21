@@ -15,7 +15,6 @@ public class Main {
     private static SeanceDAO seanceDAO = new SeanceDAOImpl();
     private static OffresDAO offresDAO = new OffresDAOImpl();
     static Scanner scanner = new Scanner(System.in);
-
     public static void main(String[] args) {
 
         GererClientsPage.ConnexionPage connexionPage = new GererClientsPage.ConnexionPage(clientDAO,billetDAO,employeDAO,filmDAO,seanceDAO,offresDAO,scanner);

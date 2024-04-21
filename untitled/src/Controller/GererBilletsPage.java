@@ -42,8 +42,8 @@ public class GererBilletsPage extends JFrame implements ActionListener {
     }
 
     public GererBilletsPage(BilletDAO billetDAO, ClientDAO clientDAO, FilmDAO filmDAO, EmployeDAO employeDAO, SeanceDAO seanceDAO, OffresDAO offresDAO, Scanner scanner, int userID) {
-        this.userID = userID;
 
+        this.userID = userID;
         this.clientDAO = clientDAO;
         this.filmDAO = filmDAO;
         this.employeDAO = employeDAO;
@@ -63,11 +63,20 @@ public class GererBilletsPage extends JFrame implements ActionListener {
 
 
 
-        btnListerBillets = createStyledButton("Lister toutes mes séances");
-        btnListerBillets.addActionListener(this);
-        add(btnListerBillets);
-
-
+        try {
+            if (!(clientDAO.trouverEmailParId(userID)).equals("admin@admin.fr")) {
+                btnListerBillets = createStyledButton("Lister toutes mes séances");
+                btnListerBillets.addActionListener(this);
+                add(btnListerBillets);
+            }
+            else {
+                btnListerBillets = createStyledButton("Lister tous les billets");
+                btnListerBillets.addActionListener(this);
+                add(btnListerBillets);
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
 
         btnSupprimerBillet = createStyledButton("Supprimer un billet");
         btnSupprimerBillet.addActionListener(this);
@@ -214,36 +223,59 @@ public class GererBilletsPage extends JFrame implements ActionListener {
                         prix = 16 - 16*(reduction/100);
                     }
 
-                    Billet billet = new Billet(100, seanceId, userID, prix);
+                    Billet billet;
 
-                    // Appel de la méthode pour ajouter le billet dans la base de données
-                    FakePaymentPage fakePaymentPage = new FakePaymentPage(prix);
+                    try {
+                        if (!(clientDAO.trouverEmailParId(userID)).equals("admin@admin.fr")) {
+                            // Création d'un objet Billet avec les données saisies
+                            billet = new Billet(100, seanceId, userID, prix);
 
-                    fakePaymentPage.addWindowListener(new WindowAdapter() {
-                        @Override
-                        public void windowClosed(WindowEvent e) {
-                            if (fakePaymentPage.isPaymentSuccessful()) {
-                                try {
-                                    billetDAO.ajouterBillet(billet);
-                                    JOptionPane.showMessageDialog(null, "Billet ajouté avec succès.");
-                                } catch (Exception ex) {
-                                    throw new RuntimeException(ex);
+
+                            FakePaymentPage fakePaymentPage = new FakePaymentPage(prix);
+
+                            fakePaymentPage.addWindowListener(new WindowAdapter() {
+                                @Override
+                                public void windowClosed(WindowEvent e) {
+                                    if (fakePaymentPage.isPaymentSuccessful()) {
+                                        try {
+                                            billetDAO.ajouterBillet(billet);
+                                            JOptionPane.showMessageDialog(null, "Billet ajouté avec succès.");
+                                        } catch (Exception ex) {
+                                            throw new RuntimeException(ex);
+                                        }
+                                    }
                                 }
-                            }
-                        }
-                    });
+                            });
 
-                    fakePaymentPage.setVisible(true);
+                            fakePaymentPage.setVisible(true);
+                        }
+                        else {
+                            int clientID = Integer.parseInt(JOptionPane.showInputDialog("Entrez l'ID du client du billet : "));
+                            // Création d'un objet Billet avec les données saisies
+                            billet = new Billet(100, seanceId, clientID, prix);
+                            billetDAO.ajouterBillet(billet);
+                            JOptionPane.showMessageDialog(null, "Billet ajouté avec succès.");
+
+                        }
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
 
                 }
             }
         }
 
         else if (e.getSource() == btnListerBillets) {
-            // Lister tous les billets de l'utilisateur courant (userID)
             List<Billet> billets = null;
             try {
-                billets = billetDAO.listerBilletsParClientId(userID);
+                if (!(clientDAO.trouverEmailParId(userID)).equals("admin@admin.fr")) {
+                    // Lister tous les billets de l'utilisateur courant (userID)
+                    billets = billetDAO.listerBilletsParClientId(userID);
+                }
+                else {
+                    // Lister tous les billets
+                    billets = billetDAO.listerTousLesBillets();
+                }
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -251,37 +283,82 @@ public class GererBilletsPage extends JFrame implements ActionListener {
             if (billets.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Aucun billet disponible pour cet utilisateur.");
             } else {
-                // Création d'un modèle de tableau pour afficher les billets dans une JTable
-                String[] entetes = {"ID Séance", "Film", "Heure", "Salle", "Prix"};
-                Object[][] donnees = new Object[billets.size()][5];
 
-                for (int i = 0; i < billets.size(); i++) {
-                    Billet billet = billets.get(i);
-                    Seance seance = null;
-                    try {
-                        seance = seanceDAO.trouverSeanceParId(billet.getSeanceId());
-                    } catch (Exception ex) {
-                        throw new RuntimeException(ex);
+                try {
+                    if (!(clientDAO.trouverEmailParId(userID)).equals("admin@admin.fr")) {
+
+                        // Création d'un modèle de tableau pour afficher les billets dans une JTable
+                        String[] entetes = {"ID Séance", "Film", "Heure", "Salle", "Prix"};
+                        Object[][] donnees = new Object[billets.size()][5];
+
+                        for (int i = 0; i < billets.size(); i++) {
+                            Billet billet = billets.get(i);
+                            Seance seance = null;
+                            try {
+                                seance = seanceDAO.trouverSeanceParId(billet.getSeanceId());
+                            } catch (Exception ex) {
+                                throw new RuntimeException(ex);
+                            }
+
+                            Film film = null;
+                            try {
+                                film = filmDAO.recupFilm(seance.getFilmId());
+                            } catch (Exception ex) {
+                                throw new RuntimeException(ex);
+                            }
+
+                            donnees[i][0] = billet.getSeanceId();
+                            donnees[i][1] = film.getTitre();
+                            donnees[i][2] = seance.getHeure();
+                            donnees[i][3] = seance.getSalle();
+                            donnees[i][4] = billet.getPrix();
+                        }
+
+                        JTable table = new JTable(donnees, entetes);
+                        table.setDefaultEditor(Object.class, null); // Désactiver l'édition de la table
+                        JScrollPane scrollPane = new JScrollPane(table);
+                        JOptionPane.showMessageDialog(null, scrollPane, "Liste des billets de l'utilisateur", JOptionPane.PLAIN_MESSAGE);
+
                     }
+                    else {  //VERSION ADMIN
 
-                    Film film = null;
-                    try {
-                        film = filmDAO.recupFilm(seance.getFilmId());
-                    } catch (Exception ex) {
-                        throw new RuntimeException(ex);
+                        // Création d'un modèle de tableau pour afficher les billets dans une JTable
+                        String[] entetes = {"ID Séance", "ID Client","Film", "Heure", "Salle", "Prix"};
+                        Object[][] donnees = new Object[billets.size()][6];
+
+                        for (int i = 0; i < billets.size(); i++) {
+                            Billet billet = billets.get(i);
+                            Seance seance = null;
+                            try {
+                                seance = seanceDAO.trouverSeanceParId(billet.getSeanceId());
+                            } catch (Exception ex) {
+                                throw new RuntimeException(ex);
+                            }
+
+                            Film film = null;
+                            try {
+                                film = filmDAO.recupFilm(seance.getFilmId());
+                            } catch (Exception ex) {
+                                throw new RuntimeException(ex);
+                            }
+
+                            donnees[i][0] = billet.getSeanceId();
+                            donnees[i][1] = billet.getClientId();
+                            donnees[i][2] = film.getTitre();
+                            donnees[i][3] = seance.getHeure();
+                            donnees[i][4] = seance.getSalle();
+                            donnees[i][5] = billet.getPrix();
+                        }
+
+                        JTable table = new JTable(donnees, entetes);
+                        table.setDefaultEditor(Object.class, null); // Désactiver l'édition de la table
+                        JScrollPane scrollPane = new JScrollPane(table);
+                        JOptionPane.showMessageDialog(null, scrollPane, "Liste de tous les billets", JOptionPane.PLAIN_MESSAGE);
+
                     }
-
-                    donnees[i][0] = billet.getSeanceId();
-                    donnees[i][1] = film.getTitre();
-                    donnees[i][2] = seance.getHeure();
-                    donnees[i][3] = seance.getSalle();
-                    donnees[i][4] = billet.getPrix();
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
                 }
-
-                JTable table = new JTable(donnees, entetes);
-                table.setDefaultEditor(Object.class, null); // Désactiver l'édition de la table
-                JScrollPane scrollPane = new JScrollPane(table);
-                JOptionPane.showMessageDialog(null, scrollPane, "Liste des billets de l'utilisateur", JOptionPane.PLAIN_MESSAGE);
             }
         }
 
@@ -289,8 +366,14 @@ public class GererBilletsPage extends JFrame implements ActionListener {
             // Récupérer tous les billets de l'utilisateur
             List<Billet> billetsUtilisateur = null;
             try {
-                System.out.println(userID);
-                billetsUtilisateur = billetDAO.listerBilletsParClientId(userID);
+                if (!(clientDAO.trouverEmailParId(userID)).equals("admin@admin.fr")) {
+                    // Lister tous les billets de l'utilisateur courant (userID)
+                    billetsUtilisateur = billetDAO.listerBilletsParClientId(userID);
+                }
+                else {
+                    // Lister tous les billets
+                    billetsUtilisateur = billetDAO.listerTousLesBillets();
+                }
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -301,12 +384,25 @@ public class GererBilletsPage extends JFrame implements ActionListener {
             } else {
                 // Créer un tableau de chaînes pour stocker les options de la liste déroulante
                 String[] optionsBillets = new String[billetsUtilisateur.size()];
-
-                // Remplir le tableau avec les options de la liste déroulante
-                for (int i = 0; i < billetsUtilisateur.size(); i++) {
-                    Billet billet = billetsUtilisateur.get(i);
-                    optionsBillets[i] = "ID: " + billet.getId() + ", Séance ID: " + billet.getSeanceId() +
-                            ", Prix: " + billet.getPrix();
+                try {
+                    if (!(clientDAO.trouverEmailParId(userID)).equals("admin@admin.fr")) {
+                        // Remplir le tableau avec les options de la liste déroulante
+                        for (int i = 0; i < billetsUtilisateur.size(); i++) {
+                            Billet billet = billetsUtilisateur.get(i);
+                            optionsBillets[i] = "ID: " + billet.getId() + ", Séance ID: " + billet.getSeanceId() +
+                                    ", Prix: " + billet.getPrix();
+                        }
+                    }
+                    else {
+                        // Remplir le tableau avec les options de la liste déroulante
+                        for (int i = 0; i < billetsUtilisateur.size(); i++) {
+                            Billet billet = billetsUtilisateur.get(i);
+                            optionsBillets[i] = "Billet ID: " + billet.getId() + ", Séance ID: " + billet.getSeanceId() +
+                                    ", Client ID: " + billet.getClientId() + ", Prix: " + billet.getPrix();
+                        }
+                    }
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
                 }
 
                 // Afficher la boîte de dialogue pour sélectionner un billet à supprimer
@@ -338,4 +434,3 @@ public class GererBilletsPage extends JFrame implements ActionListener {
     }
 
 }
-

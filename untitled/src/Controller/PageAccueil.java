@@ -170,14 +170,15 @@ public class PageAccueil extends JFrame implements ActionListener {
             btnQuitter.setPreferredSize(new Dimension((screenSize.width / 2) - 10, 100));
             buttonPanel.add(btnQuitter);
         } else {
-            btnQuitter.setPreferredSize(new Dimension((screenSize.width / 6) - 10, 100));
-            btnGererClients.setPreferredSize(new Dimension((screenSize.width / 6) - 10, 100));
-            btnGererEmployes.setPreferredSize(new Dimension((screenSize.width / 6) - 10, 100));
-            btnGererFilms.setPreferredSize(new Dimension((screenSize.width / 6) - 10, 100));
-            btnGererSeances.setPreferredSize(new Dimension((screenSize.width / 6) - 10, 100));
-            btnOffres.setPreferredSize(new Dimension((screenSize.width / 6) - 10, 100));
+            btnQuitter.setPreferredSize(new Dimension((screenSize.width / 7) - 10, 100));
+            btnGererClients.setPreferredSize(new Dimension((screenSize.width / 7) - 10, 100));
+            btnGererEmployes.setPreferredSize(new Dimension((screenSize.width / 7) - 10, 100));
+            btnGererFilms.setPreferredSize(new Dimension((screenSize.width / 7) - 10, 100));
+            btnGererSeances.setPreferredSize(new Dimension((screenSize.width / 7) - 10, 100));
+            btnGererBillets.setPreferredSize(new Dimension((screenSize.width / 7) - 10, 100));
+            btnOffres.setPreferredSize(new Dimension((screenSize.width / 7) - 10, 100));
 
-            JPanel adminPanel = new JPanel(new GridLayout(1, 5)); // Création d'un GridLayout pour aligner les boutons pour l'admin
+            JPanel adminPanel = new JPanel(new GridLayout(1, 7));
             adminPanel.setBackground(Color.DARK_GRAY);
             adminPanel.setPreferredSize(new Dimension(screenSize.width, 100));
 
@@ -185,8 +186,10 @@ public class PageAccueil extends JFrame implements ActionListener {
             adminPanel.add(btnGererEmployes);
             adminPanel.add(btnGererFilms);
             adminPanel.add(btnGererSeances);
+            adminPanel.add(btnGererBillets);
             adminPanel.add(btnOffres);
             adminPanel.add(btnQuitter);
+
 
             buttonPanel.add(adminPanel);
         }

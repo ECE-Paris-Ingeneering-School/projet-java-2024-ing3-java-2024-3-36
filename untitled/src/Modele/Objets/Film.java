@@ -8,8 +8,9 @@ public class Film {
     private String description;
     private String realisateur;
     private byte[] affiche; // Nouvel attribut pour l'affiche du film
+    private String url_ba;
 
-    public Film(int id, String titre, String genre, int duree, String description, String realisateur, byte[] affiche) {
+    public Film(int id, String titre, String genre, int duree, String description, String realisateur, byte[] affiche, String url_ba) {
         this.id = id;
         this.titre = titre;
         this.genre = genre;
@@ -17,6 +18,7 @@ public class Film {
         this.description = description;
         this.realisateur = realisateur;
         this.affiche = affiche;
+        this.url_ba = url_ba;
     }
 
     public int getId() {
@@ -75,6 +77,14 @@ public class Film {
         this.affiche = affiche;
     }
 
+    public String getUrl_ba() {
+        return url_ba;
+    }
+
+    public void setUrl_ba(String realisateur) {
+        this.url_ba = url_ba;
+    }
+
     @Override
     public String toString() {
         return "Film{" +
@@ -84,6 +94,7 @@ public class Film {
                 ", duree=" + duree +
                 ", description='" + description + '\'' +
                 ", realisateur='" + realisateur + '\'' +
+                ", url='" + url_ba + '\'' +
                 '}';
     }
 }
