@@ -4,6 +4,7 @@ import Modele.ImplementationsDAO.FilmDAOImpl;
 import Modele.InterfaceDAO.*;
 import Modele.Objets.Billet;
 import Modele.Objets.Seance;
+import Vue.AcceuilVue;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
@@ -22,23 +23,14 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static Controller.Main.scanner;
+import Vue.*;
 
 public class PageAccueil extends JFrame implements ActionListener {
 
-    private static JButton createStyledButton(String text) {
-        JButton button = new JButton(text);
-        button.setBackground(new Color(255, 215, 0)); // Couleur bleu foncé
-        button.setForeground(Color.WHITE); // Couleur du texte blanc
-        button.setFocusPainted(false); // Suppression de la bordure autour du texte lorsqu'on clique sur le bouton
-        button.setPreferredSize(new Dimension(200, 100)); // Dimensions du bouton (largeur, hauteur)
-        button.setFont(new Font("Arial", Font.BOLD, 16)); // Police du texte
-        button.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        return button;
-    }
 
 
-    private final int userID;
+
+    private static int userID = 0;
     private JButton btnGererBillets;
     private JButton btnGererClients;
     private JButton btnGererEmployes;
@@ -46,12 +38,12 @@ public class PageAccueil extends JFrame implements ActionListener {
     private JButton btnGererSeances;
     private JButton btnOffres;
     private JButton btnQuitter;
-    private ClientDAO clientDAO;
+    private static ClientDAO clientDAO;
     private FilmDAO filmDAO;
     private EmployeDAO employeDAO;
-    private SeanceDAO seanceDAO;
-    private BilletDAO billetDAO;
-    private OffresDAO offresDAO;
+    private static SeanceDAO seanceDAO;
+    private static BilletDAO billetDAO;
+    private static OffresDAO offresDAO;
 
     private Scanner scanner;
 
@@ -64,140 +56,45 @@ public class PageAccueil extends JFrame implements ActionListener {
         this.billetDAO = billetDAO;
         this.offresDAO = offresDAO;
         this.scanner = scanner;
-        setTitle("Page d'Accueil");
         String mail = clientDAO.trouverEmailParId(userID);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        // Création des boutons
-        btnGererBillets = createStyledButton("Gérer mes billets");
-        btnGererBillets.addActionListener(this);
-
-        btnGererClients = createStyledButton("Gérer les clients");
-        btnGererClients.addActionListener(this);
-
-        btnGererEmployes = createStyledButton("Gérer les employés");
-        btnGererEmployes.addActionListener(this);
-
-        btnGererFilms = createStyledButton("Gérer les films");
-        btnGererFilms.addActionListener(this);
-
-        btnGererSeances = createStyledButton("Gérer les Séances");
-        btnGererSeances.addActionListener(this);
-
-        btnOffres = createStyledButton("Ajouter des offres");
-        btnOffres.addActionListener(this);
-
-        btnQuitter = createStyledButton("Quitter");
-        btnQuitter.addActionListener(this);
-
-        // Création du label
-        JLabel golmonLabel = new JLabel("Golmon Pathé");
-        golmonLabel.setHorizontalAlignment(JLabel.CENTER);
-        golmonLabel.setVerticalAlignment(JLabel.CENTER); // Centrer verticalement
-        Font font = golmonLabel.getFont();
-        golmonLabel.setFont(new Font(font.getName(), Font.BOLD, 36));
-        golmonLabel.setBackground(Color.DARK_GRAY);
-
-        // Panneau pour le label
-        JPanel labelPanel = new JPanel(new BorderLayout());
-        labelPanel.setBackground(new Color(255, 215, 0));
-        labelPanel.setPreferredSize(new Dimension(getWidth(), 100));
-        labelPanel.add(golmonLabel, BorderLayout.CENTER);
-
-        // Panneau pour les boutons
-        JPanel buttonPanel = createButtonPanel(mail);
-
-        // Création du panneau pour les affiches
-        JPanel posterPanel = createPosterPanel();
-
-        // Création du panneau pour le texte en bas de la fenêtre
-        JPanel footerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); // Utilisation d'un FlowLayout pour centrer le texte
-        footerPanel.setBackground(new Color(255, 215, 0));
-
-        // Création du texte à afficher
-        String footerText = "© 2024 Golmon Pathé. Tous droits réservés.";
-
-        // Création du composant texte
-        JLabel footerLabel = new JLabel(footerText);
-        footerLabel.setForeground(Color.BLACK); // Couleur du texte
-        footerPanel.add(footerLabel);
-
-        // Ajout des panneaux au conteneur principal
-        // Ajout des panneaux au conteneur principal avec un BorderLayout
-        // Panneau pour contenir les éléments
-        JPanel mainPanel = new JPanel(new BorderLayout());
-
-// Ajouter le labelPanel en haut du mainPanel
-        mainPanel.add(labelPanel, BorderLayout.NORTH);
-
-// Créer un panneau pour contenir les boutons et les affiches
-        JPanel centerPanel = new JPanel(new BorderLayout());
-
-// Ajouter les boutons au centre du centerPanel
-        centerPanel.add(buttonPanel, BorderLayout.NORTH);
-
-// Ajouter les affiches en dessous des boutons dans le centerPanel
-        centerPanel.add(posterPanel, BorderLayout.CENTER);
-
-// Ajouter le centerPanel au centre du mainPanel
-        mainPanel.add(centerPanel, BorderLayout.CENTER);
-
-// Ajouter le footerPanel en bas du mainPanel
-        mainPanel.add(footerPanel, BorderLayout.SOUTH);
-
-// Ajouter le mainPanel au contenu de la JFrame
-        add(mainPanel);
-
-
-
-        // Maximiser la fenêtre
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-
-        setLocationRelativeTo(null);
-        getContentPane().setBackground(Color.DARK_GRAY);
-        setVisible(true);
+        new AcceuilVue(mail,userID,this);
     }
 
 
-
-    private JPanel createButtonPanel(String mail) {
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        buttonPanel.setBackground(Color.DARK_GRAY);
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        if (!mail.equals("admin@admin.fr")) {
-            btnGererBillets.setPreferredSize(new Dimension((screenSize.width / 2) - 10, 100));
-            buttonPanel.add(btnGererBillets);
-            btnQuitter.setPreferredSize(new Dimension((screenSize.width / 2) - 10, 100));
-            buttonPanel.add(btnQuitter);
-        } else {
-            btnQuitter.setPreferredSize(new Dimension((screenSize.width / 7) - 10, 100));
-            btnGererClients.setPreferredSize(new Dimension((screenSize.width / 7) - 10, 100));
-            btnGererEmployes.setPreferredSize(new Dimension((screenSize.width / 7) - 10, 100));
-            btnGererFilms.setPreferredSize(new Dimension((screenSize.width / 7) - 10, 100));
-            btnGererSeances.setPreferredSize(new Dimension((screenSize.width / 7) - 10, 100));
-            btnGererBillets.setPreferredSize(new Dimension((screenSize.width / 7) - 10, 100));
-            btnOffres.setPreferredSize(new Dimension((screenSize.width / 7) - 10, 100));
-
-            JPanel adminPanel = new JPanel(new GridLayout(1, 7));
-            adminPanel.setBackground(Color.DARK_GRAY);
-            adminPanel.setPreferredSize(new Dimension(screenSize.width, 100));
-
-            adminPanel.add(btnGererClients);
-            adminPanel.add(btnGererEmployes);
-            adminPanel.add(btnGererFilms);
-            adminPanel.add(btnGererSeances);
-            adminPanel.add(btnGererBillets);
-            adminPanel.add(btnOffres);
-            adminPanel.add(btnQuitter);
-
-
-            buttonPanel.add(adminPanel);
+    public void actionPerformed(ActionEvent e) {
+        String command = e.getActionCommand();
+        System.out.println("Action Command: " + command);
+        switch (command) {
+            case "gerer_billets":
+                new GererBilletsPage(billetDAO, clientDAO, filmDAO, employeDAO, seanceDAO, offresDAO, scanner, userID);
+                break;
+            case "gerer_clients":
+                new GererClientsPage(clientDAO, billetDAO, filmDAO, employeDAO, seanceDAO, offresDAO, scanner, userID);
+                break;
+            case "gerer_employes":
+                new GererEmployesPage(employeDAO, clientDAO, filmDAO, seanceDAO, billetDAO, offresDAO, scanner, userID);
+                break;
+            case "gerer_films":
+                new GererFilmsPage(filmDAO, clientDAO, employeDAO, seanceDAO, billetDAO, offresDAO, scanner, userID);
+                break;
+            case "gerer_seances":
+                new GererSeancesPage(seanceDAO, clientDAO, filmDAO, employeDAO, billetDAO, offresDAO, scanner, userID);
+                break;
+            case "gerer_offres":
+                new GererOffresPage(offresDAO, clientDAO, filmDAO, employeDAO, seanceDAO, billetDAO, scanner, userID);
+                break;
+            case "quitter":
+                System.out.println("Au revoir !");
+                System.exit(0);
+                break;
+            default:
+                System.out.println("Unknown action command: " + command);
+                break;
         }
-
-        return buttonPanel;
     }
 
-    private JPanel createPosterPanel() {
+
+    public static JPanel createPosterPanel() {
         JPanel posterPanel = new JPanel(new BorderLayout()); // Utilisation d'un BorderLayout pour placer les boutons de navigation
         posterPanel.setBackground(Color.DARK_GRAY);
 
@@ -221,9 +118,9 @@ public class PageAccueil extends JFrame implements ActionListener {
         FilmDAOImpl filmDAO = new FilmDAOImpl(); // Instancier votre DAO
 
         // Récupérer les données d'image à partir de la méthode récupérerAfficheBytes() de votre DAO
-        java.util.List<byte[]> affichesBytes = filmDAO.recupererAfficheBytes();
-        java.util.List<ImageIcon> affiches = new ArrayList<>(); // Liste pour stocker les affiches en tant qu'ImageIcon
-        java.util.List<String> titres = new ArrayList<>(); // Liste pour stocker les titres des films
+        List<byte[]> affichesBytes = filmDAO.recupererAfficheBytes();
+        List<ImageIcon> affiches = new ArrayList<>(); // Liste pour stocker les affiches en tant qu'ImageIcon
+        List<String> titres = new ArrayList<>(); // Liste pour stocker les titres des films
 
         // Parcourir la liste des données d'image
         for (byte[] imageData : affichesBytes) {
@@ -552,26 +449,6 @@ public class PageAccueil extends JFrame implements ActionListener {
         posterPanel.add(imagesPanel, BorderLayout.CENTER); // Ajouter le panneau des affiches dans le posterPanel
 
         return posterPanel;
-    }
-
-
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == btnGererBillets) {
-            new GererBilletsPage(billetDAO, clientDAO, filmDAO, employeDAO, seanceDAO, offresDAO, scanner, userID);
-        } else if (e.getSource() == btnGererClients) {
-            new GererClientsPage(clientDAO, billetDAO, filmDAO, employeDAO, seanceDAO, offresDAO, scanner, userID);
-        } else if (e.getSource() == btnGererEmployes) {
-            new GererEmployesPage(employeDAO, clientDAO, filmDAO, seanceDAO, billetDAO, offresDAO, scanner, userID);
-        } else if (e.getSource() == btnGererFilms) {
-            new GererFilmsPage(filmDAO, clientDAO, employeDAO, seanceDAO, billetDAO, offresDAO, scanner, userID);
-        } else if (e.getSource() == btnGererSeances) {
-            new GererSeancesPage(seanceDAO, clientDAO, filmDAO, employeDAO, billetDAO, offresDAO, scanner, userID);
-        } else if (e.getSource() == btnOffres) {
-            new GererOffresPage(offresDAO, clientDAO, filmDAO, employeDAO, seanceDAO, billetDAO, scanner, userID);
-        } else if (e.getSource() == btnQuitter) {
-            System.out.println("Au revoir !");
-            System.exit(0);
-        }
     }
 
 }
