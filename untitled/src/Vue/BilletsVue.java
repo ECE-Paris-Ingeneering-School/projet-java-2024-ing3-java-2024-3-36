@@ -16,18 +16,10 @@ import java.util.List;
 import java.util.Scanner;
 
 public class BilletsVue extends JFrame{
-
     private JButton btnAjouterBillet;
-
     private JButton btnListerBillets;
-
     private JButton btnSupprimerBillet;
     private JButton btnRetour;
-
-
-
-
-
     private JButton createStyledButton(String text) {
         JButton button = new JButton(text);
         button.setBackground(new Color(255, 215, 0));
@@ -48,9 +40,6 @@ public class BilletsVue extends JFrame{
         btnAjouterBillet = createStyledButton("Réserver une séance");
         btnAjouterBillet.addActionListener(controller);
         add(btnAjouterBillet);
-
-
-
 
             if (!admin) {
                 btnListerBillets = createStyledButton("Lister toutes mes séances");

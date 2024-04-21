@@ -36,7 +36,7 @@ public class PaymentVue extends JFrame{
         button.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         return button;
     }
-    public PaymentVue(ActionListener controller, boolean admin) {
+    public PaymentVue() {
 
 
         setTitle("Fausse Page de Paiement");
@@ -83,7 +83,7 @@ public class PaymentVue extends JFrame{
             }
         });
 
-        setVisible(true); // Rendre la fenêtre visible après avoir ajouté tous les composants
+        setVisible(true);
     }
 
     private boolean validatePaymentInfo() {

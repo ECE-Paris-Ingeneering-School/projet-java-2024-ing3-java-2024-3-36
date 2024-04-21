@@ -1,5 +1,7 @@
 package Controller;
 
+import Vue.PaymentVue;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -15,7 +17,7 @@ public  class FakePaymentPage extends JFrame {
     public FakePaymentPage(double prixAPayer) {
         this.prixAPayer = prixAPayer;
 
-
+        new PaymentVue();
     }
 
 

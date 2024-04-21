@@ -26,6 +26,8 @@ public class GererClientsPage extends JFrame implements ActionListener {
     private JButton btnSupprimerClient;
     private JButton btnRetour;
 
+    private int idSuppression;
+
 
     private static JButton createStyledButton(String text) {
         JButton button = new JButton(text);
@@ -51,97 +53,106 @@ public class GererClientsPage extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == btnAjouterClient) {
-            String nom = JOptionPane.showInputDialog("Entrez le nom du client : ");
-            String email = JOptionPane.showInputDialog("Entrez l'email du client : ");
-            String[] options_type = {"non membre", "membre"};
-            String type = (String) JOptionPane.showInputDialog(null, "Sélectionnez le type de compte:", "Choix de type", JOptionPane.QUESTION_MESSAGE, null, options_type, options_type[0]);
-            String etat = "null";
-            if("membre".equals(type)) {
-                String[] options = {"régulier", "sénior", "enfant"};
-                etat = (String) JOptionPane.showInputDialog(null, "Sélectionnez la catégorie de compte :", "Choix de catégorie", JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-            } else {
-                etat = "null";
-            }
-            String motDePasse = JOptionPane.showInputDialog("Entrez votre mot de passe");
-            Client client = new Client(0, nom, email, type, motDePasse, etat);
-            try {
-                clientDAO.ajouterClient(client);
-                JOptionPane.showMessageDialog(null, "Client ajouté avec succès.");
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "Une erreur est survenue : " + ex.getMessage());
-            }
-        } else if (e.getSource() == btnTrouverClient) {
-            int id = Integer.parseInt(JOptionPane.showInputDialog("Entrez l'ID du client : "));
-            Client client = null;
-            try {
-                client = clientDAO.trouverClientParId(id);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-            JOptionPane.showMessageDialog(null, client != null ? client.toString() : "Client non trouvé.");
-        } else if (e.getSource() == btnListerClients) {
-            List<Client> clients = null;
-            try {
-                clients = clientDAO.listerTousLesClients();
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-            if (clients.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Aucun client disponible.");
-            } else {
-                String[] entetes = {"ID", "Nom", "Email", "Type", "Mot de Passe"};
-                Object[][] donnees = new Object[clients.size()][5];
-                for (int i = 0; i < clients.size(); i++) {
-                    Client client = clients.get(i);
-                    donnees[i][0] = client.getId();
-                    donnees[i][1] = client.getNom();
-                    donnees[i][2] = client.getEmail();
-                    donnees[i][3] = client.getType();
-                    donnees[i][4] = client.getMotDePasse();
+        String command = e.getActionCommand();
+        switch (command) {
+            case "Ajouter un client":
+                String nom = JOptionPane.showInputDialog("Entrez le nom du client : ");
+                String email = JOptionPane.showInputDialog("Entrez l'email du client : ");
+                String[] options_type = {"non membre", "membre"};
+                String type = (String) JOptionPane.showInputDialog(null, "Sélectionnez le type de compte:", "Choix de type", JOptionPane.QUESTION_MESSAGE, null, options_type, options_type[0]);
+                String etat = "null";
+                if("membre".equals(type)) {
+                    String[] categories = {"régulier", "sénior", "enfant"};
+                    etat = (String) JOptionPane.showInputDialog(null, "Sélectionnez la catégorie de compte :", "Choix de catégorie", JOptionPane.QUESTION_MESSAGE, null, categories, categories[0]);
                 }
-                JTable table = new JTable(donnees, entetes);
-                JScrollPane scrollPane = new JScrollPane(table);
-                JOptionPane.showMessageDialog(null, scrollPane, "Liste des clients", JOptionPane.PLAIN_MESSAGE);
-            }
-        } else if (e.getSource() == btnMettreAJourClient) {
-            int id = Integer.parseInt(JOptionPane.showInputDialog("Entrez l'ID du client à mettre à jour : "));
-            Client client = null;
-            try {
-                client = clientDAO.trouverClientParId(id);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-            if (client != null) {
-                String nouveauNom = JOptionPane.showInputDialog("Entrez le nouveau nom du client : ");
-                String nouvelEmail = JOptionPane.showInputDialog("Entrez le nouvel email du client : ");
-                String nouveauType = JOptionPane.showInputDialog("Entrez le nouveau type du client : ");
-                String nouveauMotDePasse = JOptionPane.showInputDialog("Entrez le nouveau Mot de passe du client : ");
-                client.setNom(nouveauNom);
-                client.setEmail(nouvelEmail);
-                client.setType(nouveauType);
-                client.setMotDePasse(nouveauMotDePasse);
+                String motDePasse = JOptionPane.showInputDialog("Entrez votre mot de passe");
+                Client client = new Client(0, nom, email, type, motDePasse, etat);
                 try {
-                    clientDAO.mettreAJourClient(client);
-                    JOptionPane.showMessageDialog(null, "Client mis à jour avec succès.");
+                    clientDAO.ajouterClient(client);
+                    JOptionPane.showMessageDialog(null, "Client ajouté avec succès.");
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Une erreur est survenue : " + ex.getMessage());
                 }
-            } else {
-                JOptionPane.showMessageDialog(null, "Client non trouvé.");
-            }
-        } else if (e.getSource() == btnSupprimerClient) {
-            int idSuppression = Integer.parseInt(JOptionPane.showInputDialog("Entrez l'ID du client à supprimer : "));
-            try {
-                clientDAO.supprimerClient(idSuppression);
-                JOptionPane.showMessageDialog(null, "Client supprimé avec succès.");
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "Une erreur est survenue : " + ex.getMessage());
-            }
-        } else if (e.getSource() == btnRetour) {
-            dispose();
+                break;
+
+            case "Trouver un client par ID":
+                int id = Integer.parseInt(JOptionPane.showInputDialog("Entrez l'ID du client : "));
+                try {
+                    Client foundClient = clientDAO.trouverClientParId(id);
+                    JOptionPane.showMessageDialog(null, foundClient != null ? foundClient.toString() : "Client non trouvé.");
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Une erreur est survenue lors de la recherche : " + ex.getMessage());
+                }
+                break;
+
+            case "Lister tous les clients":
+                try {
+                    List<Client> clients = clientDAO.listerTousLesClients();
+                    if (clients.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "Aucun client disponible.");
+                    } else {
+                        String[] headers = {"ID", "Nom", "Email", "Type", "Mot de Passe"};
+                        Object[][] data = new Object[clients.size()][5];
+                        for (int i = 0; i < clients.size(); i++) {
+                            Client c = clients.get(i);
+                            data[i][0] = c.getId();
+                            data[i][1] = c.getNom();
+                            data[i][2] = c.getEmail();
+                            data[i][3] = c.getType();
+                            data[i][4] = c.getMotDePasse();
+                        }
+                        JTable table = new JTable(data, headers);
+                        JScrollPane scrollPane = new JScrollPane(table);
+                        JOptionPane.showMessageDialog(null, scrollPane, "Liste des clients", JOptionPane.PLAIN_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Erreur lors du listing des clients : " + ex.getMessage());
+                }
+                break;
+
+            case "Mettre à jour un client":
+                id = Integer.parseInt(JOptionPane.showInputDialog("Entrez l'ID du client à mettre à jour : "));
+                try {
+                    client = clientDAO.trouverClientParId(id);
+                    if (client != null) {
+                        String nouveauNom = JOptionPane.showInputDialog("Entrez le nouveau nom du client : ");
+                        String nouvelEmail = JOptionPane.showInputDialog("Entrez le nouvel email du client : ");
+                        String nouveauType = JOptionPane.showInputDialog("Entrez le nouveau type du client : ");
+                        String nouveauMotDePasse = JOptionPane.showInputDialog("Entrez le nouveau mot de passe du client : ");
+                        client.setNom(nouveauNom);
+                        client.setEmail(nouvelEmail);
+                        client.setType(nouveauType);
+                        client.setMotDePasse(nouveauMotDePasse);
+                        clientDAO.mettreAJourClient(client);
+                        JOptionPane.showMessageDialog(null, "Client mis à jour avec succès.");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Client non trouvé.");
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Une erreur est survenue lors de la mise à jour : " + ex.getMessage());
+                }
+                break;
+
+            case "Supprimer un client":
+                idSuppression = Integer.parseInt(JOptionPane.showInputDialog("Entrez l'ID du client à supprimer : "));
+                try {
+                    clientDAO.supprimerClient(idSuppression);
+                    JOptionPane.showMessageDialog(null, "Client supprimé avec succès.");
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Une erreur est survenue : " + ex.getMessage());
+                }
+                break;
+
+            case "Retour au menu principal":
+                dispose();
+                break;
+
+            default:
+                JOptionPane.showMessageDialog(null, "Commande inconnue: " + command);
+                break;
         }
     }
+
 
 
 

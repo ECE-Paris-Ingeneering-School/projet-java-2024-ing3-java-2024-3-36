@@ -64,116 +64,103 @@ public class GererBilletsPage extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == btnAjouterBillet) {
-            List<Seance> seances;
-            try {
-                seances = seanceDAO.listerToutesLesSeances();
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "Erreur lors de la récupération des séances: " + ex.getMessage());
-                return;
-            }
-
-            if (seances.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Aucune séance disponible pour ce film.");
-                return;
-            }
-
-            String[] headers = {"ID", "Film", "Date et heure", "Salle", "Prix"};
-            Object[][] data = new Object[seances.size()][5];
-            double basePrice = 8;  // Example base price
-            double reduction = 0;
-
-            try {
-                String clientState = clientDAO.trouverEtatParId(userID);
-                switch (clientState) {
-                    case "regulier":
-                        reduction = offresDAO.getOffreRegulier();
-                        break;
-                    case "senior":
-                        reduction = offresDAO.getOffreSenior();
-                        break;
-                    case "enfant":
-                        reduction = offresDAO.getOffreEnfant();
-                        break;
-                }
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "Erreur lors de la récupération de l'offre: " + ex.getMessage());
-                return;
-            }
-
-            for (int i = 0; i < seances.size(); i++) {
-                Seance seance = seances.get(i);
-                String filmTitle = "Unknown";
+        String command = e.getActionCommand();  
+        switch (command) {
+            case "Réserver une séance":
+                List<Seance> seances;
                 try {
-                    filmTitle = filmDAO.trouverTitreParId(seance.getFilmId());
+                    seances = seanceDAO.listerToutesLesSeances();
+                    if (seances.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "Aucune séance disponible pour ce film.");
+                        return;
+                    }
+
+                    String[] headers = {"ID", "Film", "Date et heure", "Salle", "Prix"};
+                    Object[][] data = new Object[seances.size()][5];
+                    double basePrice = 8;
+                    double reduction = 0;
+
+                    String clientState = clientDAO.trouverEtatParId(userID);
+                    switch (clientState) {
+                        case "regulier":
+                            reduction = offresDAO.getOffreRegulier();
+                            break;
+                        case "senior":
+                            reduction = offresDAO.getOffreSenior();
+                            break;
+                        case "enfant":
+                            reduction = offresDAO.getOffreEnfant();
+                            break;
+                    }
+
+                    for (int i = 0; i < seances.size(); i++) {
+                        Seance seance = seances.get(i);
+                        String filmTitle = filmDAO.trouverTitreParId(seance.getFilmId());
+                        data[i][0] = seance.getId();
+                        data[i][1] = filmTitle;
+                        data[i][2] = seance.getHeure();
+                        data[i][3] = seance.getSalle();
+                        data[i][4] = calculatePrice(seance.getSalle(), basePrice, reduction);
+                    }
+
+                    JTable table = new JTable(data, headers);
+                    JScrollPane scrollPane = new JScrollPane(table);
+                    JOptionPane.showMessageDialog(null, scrollPane, "Liste des séances", JOptionPane.PLAIN_MESSAGE);
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "Erreur lors de la récupération du titre du film: " + ex.getMessage());
-                    continue;
+                    JOptionPane.showMessageDialog(null, "Erreur lors de la récupération des séances: " + ex.getMessage());
                 }
+                break;
 
-                data[i][0] = seance.getId();
-                data[i][1] = filmTitle;
-                data[i][2] = seance.getHeure();
-                data[i][3] = seance.getSalle();
-                data[i][4] = calculatePrice(seance.getSalle(), basePrice, reduction);
-            }
-
-            JTable table = new JTable(data, headers);
-            JScrollPane scrollPane = new JScrollPane(table);
-            JOptionPane.showMessageDialog(null, scrollPane, "Liste des séances", JOptionPane.PLAIN_MESSAGE);
-
-            // Simulation of user selecting a row to book a ticket
-            int selectedRow = table.getSelectedRow();
-            if (selectedRow != -1) {
-                int seanceId = (Integer) table.getValueAt(selectedRow, 0);
-                double price = (Double) table.getValueAt(selectedRow, 4);
+            case "Lister toutes mes séances":
+            case "Lister tous les billets":
+                List<Billet> billets;
                 try {
-                    billetDAO.ajouterBillet(new Billet(0, seanceId, userID, price));
-                    JOptionPane.showMessageDialog(null, "Billet ajouté avec succès.");
+                    billets = (clientDAO.trouverEmailParId(userID).equals("admin@admin.fr")) ?
+                            billetDAO.listerTousLesBillets() : billetDAO.listerBilletsParClientId(userID);
+
+                    if (billets.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "Aucun billet disponible pour cet utilisateur.");
+                        return;
+                    }
+
+                    String[] headers = {"Billet ID", "Séance ID", "Client ID", "Prix"};
+                    Object[][] data = new Object[billets.size()][4];
+                    for (int i = 0; i < billets.size(); i++) {
+                        Billet billet = billets.get(i);
+                        data[i][0] = billet.getId();
+                        data[i][1] = billet.getSeanceId();
+                        data[i][2] = billet.getClientId();
+                        data[i][3] = billet.getPrix();
+                    }
+
+                    JTable table = new JTable(data, headers);
+                    JScrollPane scrollPane = new JScrollPane(table);
+                    JOptionPane.showMessageDialog(null, scrollPane, "Liste des billets", JOptionPane.PLAIN_MESSAGE);
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "Erreur lors de l'ajout du billet: " + ex.getMessage());
+                    JOptionPane.showMessageDialog(null, "Erreur lors de la récupération des billets: " + ex.getMessage());
                 }
-            }
-        } else if (e.getSource() == btnListerBillets) {
-            List<Billet> billets;
-            try {
-                billets = (clientDAO.trouverEmailParId(userID).equals("admin@admin.fr")) ?
-                        billetDAO.listerTousLesBillets() : billetDAO.listerBilletsParClientId(userID);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "Erreur lors de la récupération des billets: " + ex.getMessage());
-                return;
-            }
+                break;
 
-            if (billets.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Aucun billet disponible pour cet utilisateur.");
-                return;
-            }
+            case "Supprimer un billet":
+                int billetID = Integer.parseInt(JOptionPane.showInputDialog("Entrez l'ID du billet à supprimer :"));
+                try {
+                    billetDAO.supprimerBillet(billetID);
+                    JOptionPane.showMessageDialog(null, "Billet supprimé avec succès.");
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Erreur lors de la suppression du billet: " + ex.getMessage());
+                }
+                break;
 
-            String[] headers = {"Billet ID", "Séance ID", "Client ID", "Prix"};
-            Object[][] data = new Object[billets.size()][4];
-            for (int i = 0; i < billets.size(); i++) {
-                Billet billet = billets.get(i);
-                data[i][0] = billet.getId();
-                data[i][1] = billet.getSeanceId();
-                data[i][2] = billet.getClientId();
-                data[i][3] = billet.getPrix();
-            }
+            case "Retour au menu principal":
+                dispose();
+                break;
 
-            JTable table = new JTable(data, headers);
-            JScrollPane scrollPane = new JScrollPane(table);
-            JOptionPane.showMessageDialog(null, scrollPane, "Liste des billets", JOptionPane.PLAIN_MESSAGE);
-        } else if (e.getSource() == btnSupprimerBillet) {
-            int billetID = Integer.parseInt(JOptionPane.showInputDialog("Entrez l'ID du billet à supprimer :"));
-            try {
-                billetDAO.supprimerBillet(billetID);
-                JOptionPane.showMessageDialog(null, "Billet supprimé avec succès.");
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "Erreur lors de la suppression du billet: " + ex.getMessage());
-            }
-        } else if (e.getSource() == btnRetour) {
-            dispose();
+            default:
+                JOptionPane.showMessageDialog(null, "Commande inconnue: " + command);
+                break;
         }
     }
+
 
     private double calculatePrice(String salleType, double basePrice, double reduction) {
         double price = basePrice;
