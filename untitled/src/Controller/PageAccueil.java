@@ -410,21 +410,9 @@ public class PageAccueil implements ActionListener {
 
                                                     FakePaymentPage fakePaymentPage = new FakePaymentPage(prix[0]);
 
-                                                    fakePaymentPage.addWindowListener(new WindowAdapter() {
-                                                        @Override
-                                                        public void windowClosed(WindowEvent e) {
-                                                            if (fakePaymentPage.isPaymentSuccessful()) {
-                                                                try {
-                                                                    billetDAO.ajouterBillet(billet);
-                                                                    JOptionPane.showMessageDialog(null, "Billet ajouté avec succès.");
-                                                                } catch (Exception ex) {
-                                                                    throw new RuntimeException(ex);
-                                                                }
-                                                            }
-                                                        }
-                                                    });
 
-                                                    fakePaymentPage.setVisible(true);
+
+
                                                 }
                                                 else {
                                                     int clientID = Integer.parseInt(JOptionPane.showInputDialog("Entrez l'ID du client du billet : "));

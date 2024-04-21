@@ -7,7 +7,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public  class FakePaymentPage extends JFrame {
+public  class FakePaymentPage {
     private JTextField cardNumberField;
     private JPasswordField cvvField;
     private JTextField expiryDateField;

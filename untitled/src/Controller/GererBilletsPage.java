@@ -105,7 +105,18 @@ public class GererBilletsPage extends JFrame implements ActionListener {
 
                     JTable table = new JTable(data, headers);
                     JScrollPane scrollPane = new JScrollPane(table);
-                    JOptionPane.showMessageDialog(null, scrollPane, "Liste des séances", JOptionPane.PLAIN_MESSAGE);
+                    table.setDefaultEditor(Object.class, null);
+                    int response = JOptionPane.showConfirmDialog(null, scrollPane, "Liste des séances", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+                    if (response == JOptionPane.OK_OPTION) {
+                        int selectedRow = table.getSelectedRow();
+                        if (selectedRow != -1) {
+                            double price = (double) data[selectedRow][4];
+                            FakePaymentPage fakePaymentPage = new FakePaymentPage(price);
+
+
+                        }
+                    }
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Erreur lors de la récupération des séances: " + ex.getMessage());
                 }
@@ -136,9 +147,13 @@ public class GererBilletsPage extends JFrame implements ActionListener {
                     JTable table = new JTable(data, headers);
                     JScrollPane scrollPane = new JScrollPane(table);
                     JOptionPane.showMessageDialog(null, scrollPane, "Liste des billets", JOptionPane.PLAIN_MESSAGE);
+
+
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Erreur lors de la récupération des billets: " + ex.getMessage());
                 }
+
+
                 break;
 
             case "Supprimer un billet":
@@ -165,40 +180,39 @@ public class GererBilletsPage extends JFrame implements ActionListener {
     private double calculatePrice(String salleType, double basePrice, double reduction) {
         double price = basePrice;
 
-        // Adjust price based on the type of the room
+
         switch (salleType) {
             case "Salle Standard":
-                price = basePrice;  // No additional cost for standard rooms
+                price = basePrice;
                 break;
             case "Salle 3D":
-                price = basePrice + 1;  // Additional cost for 3D features
+                price = basePrice + 1;
                 break;
             case "Salle THX":
-                price = basePrice + 2;  // Additional cost for THX certified rooms
+                price = basePrice + 2;
                 break;
             case "Salle UltraAVX":
-                price = basePrice + 3;  // Additional cost for UltraAVX rooms
+                price = basePrice + 3;
                 break;
             case "Salle Dolby Cinema":
-                price = basePrice + 4;  // Additional cost for Dolby Cinema
+                price = basePrice + 4;
                 break;
             case "Salle IMAX":
-                price = basePrice + 5;  // Additional cost for IMAX rooms
+                price = basePrice + 5;
                 break;
             case "Salle D-Box":
-                price = basePrice + 6;  // Additional cost for D-Box motion seats
+                price = basePrice + 6;
                 break;
             case "Salle 4DX":
-                price = basePrice + 7;  // Additional cost for 4DX rooms
+                price = basePrice + 7;
                 break;
             case "Salle VIP":
-                price = basePrice + 8;  // Additional cost for VIP service
+                price = basePrice + 8;
                 break;
             case "Salle Gold Class":
-                price = basePrice + 9;  // Additional cost for Gold Class luxury experience
+                price = basePrice + 9;
                 break;
             default:
-                // Default price if room type is not recognized
                 price = basePrice;
                 break;
         }
