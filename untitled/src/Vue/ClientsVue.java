@@ -44,6 +44,7 @@ public class ClientsVue extends JFrame{
         setLayout(new GridLayout(6, 1));
 
         btnAjouterClient = createStyledButton("Ajouter un client");
+
         btnAjouterClient.addActionListener(controller);
         add(btnAjouterClient);
 
