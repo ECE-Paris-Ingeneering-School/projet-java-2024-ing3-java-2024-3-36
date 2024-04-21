@@ -33,6 +33,7 @@ public  class GererSeancesPage extends JFrame implements ActionListener {
 
     public GererSeancesPage(SeanceDAO seanceDAO, ClientDAO clientDAO, FilmDAO filmDAO, EmployeDAO employeDAO, BilletDAO billetDAO, OffresDAO offresDAO, Scanner scanner, int userID) {
 
+
         this.clientDAO = clientDAO;
         this.filmDAO = filmDAO;
         this.employeDAO = employeDAO;
@@ -88,7 +89,7 @@ public  class GererSeancesPage extends JFrame implements ActionListener {
                         donnees[i][1] = s.getFilmId();
                         donnees[i][2] = s.getHeure();
                         donnees[i][3] = s.getSalle();
-                        donnees[i][4] = 10; // Prix fictif pour l'exemple
+                        donnees[i][4] = 10;
                     }
                     JTable table = new JTable(donnees, entetes);
                     JScrollPane scrollPane = new JScrollPane(table);

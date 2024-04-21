@@ -2,6 +2,7 @@ package Controller;
 
 import Modele.InterfaceDAO.*;
 import Modele.Objets.Film;
+import Vue.AcceuilVue;
 import Vue.FilmsVue;
 
 import javax.swing.*;
@@ -14,9 +15,12 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Scanner;
 
+
+
 public  class GererFilmsPage extends JFrame implements ActionListener {
 
 
+    private final int userID;
     private JButton btnAjouterFilm;
     private JButton btnTrouverFilm;
     private JButton btnListerFilms;
@@ -52,6 +56,8 @@ public  class GererFilmsPage extends JFrame implements ActionListener {
         this.offresDAO = offresDAO;
         this.scanner = scanner;
 
+        this.userID = userID;
+
         new FilmsVue(this);
 
     }
@@ -66,12 +72,14 @@ public  class GererFilmsPage extends JFrame implements ActionListener {
                 int duree = Integer.parseInt(JOptionPane.showInputDialog("Entrez la durée du film : "));
                 String description = JOptionPane.showInputDialog("Entrez la description du film : ");
                 String realisateur = JOptionPane.showInputDialog("Entrez le réalisateur du film : ");
-                byte[] affiche = selectAffiche(); // Assumes this method handles file selection for a movie poster
+                byte[] affiche = selectAffiche();
                 String url_ba = JOptionPane.showInputDialog("Entrez l'URL de la Bande Annonce du film : ");
                 Film film = new Film(0, titre, genre, duree, description, realisateur, affiche, url_ba);
                 try {
                     filmDAO.ajouterFilm(film);
                     JOptionPane.showMessageDialog(null, "Film ajouté avec succès.");
+
+                    new AcceuilVue(clientDAO.trouverEmailParId(userID),userID,this );
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Une erreur est survenue : " + ex.getMessage());
                 }

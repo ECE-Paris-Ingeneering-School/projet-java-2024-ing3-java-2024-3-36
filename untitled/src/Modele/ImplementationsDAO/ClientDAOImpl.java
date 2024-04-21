@@ -16,6 +16,23 @@ public class ClientDAOImpl implements ClientDAO {
     private static final String UPDATE_CLIENTS_SQL = "update clients set nom = ?, email= ?, type =?, motDePasse=?, etat =? where id = ?;";
 
 
+
+    @Override
+    public void mettreAJourClient(Client client) throws Exception {
+        try (Connection connection = ConnectionDatabase.getConnection();
+             PreparedStatement statement = connection.prepareStatement(UPDATE_CLIENTS_SQL)) {
+            statement.setString(1, client.getNom());
+            statement.setString(2, client.getEmail());
+            statement.setString(3, client.getType());
+            statement.setString(4, client.getMotDePasse());
+            statement.setString(5, client.getEtat());
+            statement.setInt(6, client.getId());
+
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            printSQLException(e);
+        }
+    }
     @Override
     public void ajouterClient(Client client) throws Exception {
         try (Connection connection = ConnectionDatabase.getConnection();
@@ -150,22 +167,7 @@ public class ClientDAOImpl implements ClientDAO {
         return clients;
     }
 
-    @Override
-    public void mettreAJourClient(Client client) throws Exception {
-        try (Connection connection = ConnectionDatabase.getConnection();
-             PreparedStatement statement = connection.prepareStatement(UPDATE_CLIENTS_SQL)) {
-            statement.setString(1, client.getNom());
-            statement.setString(2, client.getEmail());
-            statement.setString(3, client.getType());
-            statement.setString(5, client.getMotDePasse());
-            statement.setString(6, client.getEtat());
-            statement.setInt(4, client.getId());
 
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            printSQLException(e);
-        }
-    }
 
     @Override
     public void supprimerClient(int id) throws Exception {

@@ -241,7 +241,7 @@ public class PageAccueil implements ActionListener {
                             String[] entetes = {"ID", "Film", "Date et heure", "Salle", "Prix"};
                             Object[][] donnees = new Object[seances.size()][5];
                             final double[] prix = {8};
-                            double reduction = 1;
+                            double reduction = 0;
 
                             try {
                                 if((clientDAO.trouverEtatParId(userID)).equals("regulier")) {
