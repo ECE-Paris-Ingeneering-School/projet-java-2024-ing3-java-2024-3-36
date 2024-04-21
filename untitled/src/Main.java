@@ -1,5 +1,4 @@
-package Controller;
-
+import Controller.ConnexionPage;
 import Modele.ImplementationsDAO.*;
 import Modele.InterfaceDAO.*;
 
@@ -18,6 +17,6 @@ public class Main {
     public static void main(String[] args) {
 
         ConnexionPage connexionPage = new ConnexionPage(clientDAO,billetDAO,employeDAO,filmDAO,seanceDAO,offresDAO,scanner);
-        connexionPage.setVisible(true);
+
     }
 }

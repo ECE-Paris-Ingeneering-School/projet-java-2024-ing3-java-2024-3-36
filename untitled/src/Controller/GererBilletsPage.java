@@ -25,9 +25,7 @@ public class GererBilletsPage extends JFrame implements ActionListener {
     private SeanceDAO seanceDAO;
     private OffresDAO offresDAO;
     private JButton btnAjouterBillet;
-
     private JButton btnListerBillets;
-
     private JButton btnSupprimerBillet;
     private JButton btnRetour;
 
@@ -177,13 +175,6 @@ public class GererBilletsPage extends JFrame implements ActionListener {
         }
     }
 
-    /**
-     * Calculates the price of a ticket based on the type of the session room and the applicable discount.
-     * @param salleType The type of the session room.
-     * @param basePrice The base price for the ticket.
-     * @param reduction The percentage of discount to be applied.
-     * @return The final price of the ticket after applying the discount.
-     */
     private double calculatePrice(String salleType, double basePrice, double reduction) {
         double price = basePrice;
 

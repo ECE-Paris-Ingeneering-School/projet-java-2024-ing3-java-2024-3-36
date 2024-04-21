@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import Vue.*;
 
-public class PageAccueil extends JFrame implements ActionListener {
+public class PageAccueil implements ActionListener {
 
 
 
@@ -56,6 +56,7 @@ public class PageAccueil extends JFrame implements ActionListener {
         this.billetDAO = billetDAO;
         this.offresDAO = offresDAO;
         this.scanner = scanner;
+
         String mail = clientDAO.trouverEmailParId(userID);
         new AcceuilVue(mail,userID,this);
     }
