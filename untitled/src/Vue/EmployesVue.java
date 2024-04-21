@@ -65,12 +65,20 @@ public class EmployesVue extends JFrame{
         add(btnSupprimerEmploye);
 
         btnRetour = createStyledButton("Retour au menu principal");
-        btnRetour.addActionListener(controller);
+        btnRetour.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                closeWindow();
+            }
+        });
         add(btnRetour);
 
         setSize(400, 400);
         setVisible(true);
-
     }
 
+    // Method to close the window
+    public void closeWindow() {
+        dispose();
+    }
 }

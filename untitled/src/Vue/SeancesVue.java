@@ -13,8 +13,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
-
-public class SeancesVue extends JFrame{
+public class SeancesVue extends JFrame {
 
     private JButton btnAjouterSeance;
     private JButton btnTrouverSeance;
@@ -33,12 +32,19 @@ public class SeancesVue extends JFrame{
         button.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         return button;
     }
-    public SeancesVue(ActionListener controller) {
 
+    public SeancesVue(ActionListener controller) {
         setTitle("Gérer les séances");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new GridLayout(6, 1));
 
+        initializeButtons(controller);
+        setSize(400, 400);
+        setLocationRelativeTo(null); // Center the window
+        setVisible(true);
+    }
+
+    private void initializeButtons(ActionListener controller) {
         btnAjouterSeance = createStyledButton("Ajouter une séance");
         btnAjouterSeance.addActionListener(controller);
         add(btnAjouterSeance);
@@ -60,12 +66,17 @@ public class SeancesVue extends JFrame{
         add(btnSupprimerSeance);
 
         btnRetour = createStyledButton("Retour au menu principal");
-        btnRetour.addActionListener(controller);
+        btnRetour.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                closeWindow();
+            }
+        });
         add(btnRetour);
-
-        setSize(400, 400);
-        setVisible(true);
-
     }
 
+    // Method to close the window
+    public void closeWindow() {
+        dispose();
+    }
 }

@@ -126,7 +126,7 @@ public  class GererSeancesPage extends JFrame implements ActionListener {
                 }
                 break;
             case "Retour au menu principal":
-                dispose();
+                
                 break;
             default:
                 System.out.println("Commande inconnue: " + command);

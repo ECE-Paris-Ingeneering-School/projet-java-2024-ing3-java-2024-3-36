@@ -64,12 +64,21 @@ public class ClientsVue extends JFrame{
         add(btnSupprimerClient);
 
         btnRetour = createStyledButton("Retour au menu principal");
-        btnRetour.addActionListener(controller);
+        btnRetour.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                closeWindow();
+            }
+        });
         add(btnRetour);
 
         setSize(400, 400);
         setVisible(true);
 
+    }
+
+    public void closeWindow() {
+        dispose();
     }
 
 }

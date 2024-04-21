@@ -1,6 +1,3 @@
-package Vue;
-
-
 import Modele.InterfaceDAO.*;
 
 import javax.swing.*;
@@ -41,16 +38,16 @@ public class BilletsVue extends JFrame{
         btnAjouterBillet.addActionListener(controller);
         add(btnAjouterBillet);
 
-            if (!admin) {
-                btnListerBillets = createStyledButton("Lister toutes mes séances");
-                btnListerBillets.addActionListener(controller);
-                add(btnListerBillets);
-            }
-            else {
-                btnListerBillets = createStyledButton("Lister tous les billets");
-                btnListerBillets.addActionListener(controller);
-                add(btnListerBillets);
-            }
+        if (!admin) {
+            btnListerBillets = createStyledButton("Lister toutes mes séances");
+            btnListerBillets.addActionListener(controller);
+            add(btnListerBillets);
+        }
+        else {
+            btnListerBillets = createStyledButton("Lister tous les billets");
+            btnListerBillets.addActionListener(controller);
+            add(btnListerBillets);
+        }
 
 
         btnSupprimerBillet = createStyledButton("Supprimer un billet");
@@ -58,12 +55,19 @@ public class BilletsVue extends JFrame{
         add(btnSupprimerBillet);
 
         btnRetour = createStyledButton("Retour au menu principal");
-        btnRetour.addActionListener(controller);
+        btnRetour.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                closeWindow();
+            }
+        });
         add(btnRetour);
 
-        // Taille de la fenêtre
         setSize(400, 400);
         setVisible(true);
     }
 
+    public void closeWindow() {
+        dispose();
+    }
 }
