@@ -1,7 +1,7 @@
 package Modele.Objets;
 
 public class Film {
-    private int id;
+    private int id2;
     private String titre;
     private String genre;
     private int duree;
@@ -9,7 +9,6 @@ public class Film {
     private String realisateur;
     private byte[] affiche; // Nouvel attribut pour l'affiche du film
     private String url_ba;
-
     public Film(int id, String titre, String genre, int duree, String description, String realisateur, byte[] affiche, String url_ba) {
         this.id = id;
         this.titre = titre;
