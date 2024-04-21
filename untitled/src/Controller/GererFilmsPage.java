@@ -19,6 +19,7 @@ import java.util.Scanner;
 
 public  class GererFilmsPage extends JFrame implements ActionListener {
 
+    private UIUpdater uiUpdater;
 
     private final int userID;
     private JButton btnAjouterFilm;
@@ -47,7 +48,9 @@ public  class GererFilmsPage extends JFrame implements ActionListener {
         return button;
     }
 
-    public GererFilmsPage(FilmDAO filmDAO, ClientDAO clientDAO, EmployeDAO employeDAO, SeanceDAO seanceDAO, BilletDAO billetDAO, OffresDAO offresDAO, Scanner scanner, int userID) {
+    public GererFilmsPage(FilmDAO filmDAO, ClientDAO clientDAO, EmployeDAO employeDAO, SeanceDAO seanceDAO, BilletDAO billetDAO, OffresDAO offresDAO, Scanner scanner, int userID, UIUpdater uiUpdater) {
+
+        this.uiUpdater = uiUpdater;
         this.clientDAO = clientDAO;
         this.filmDAO = filmDAO;
         this.employeDAO = employeDAO;
@@ -79,8 +82,9 @@ public  class GererFilmsPage extends JFrame implements ActionListener {
                     filmDAO.ajouterFilm(film);
                     JOptionPane.showMessageDialog(null, "Film ajouté avec succès.");
 
-                    
-                    new AcceuilVue(clientDAO.trouverEmailParId(userID),userID,this );
+                        uiUpdater.refreshUI();
+
+                    break;
 
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Une erreur est survenue : " + ex.getMessage());

@@ -22,14 +22,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.swing.*;
 
 import Vue.*;
 
-public class PageAccueil implements ActionListener {
+public class PageAccueil extends JFrame implements UIUpdater, ActionListener {
 
 
+    public void refreshUI() {
+        createPosterPanel(); // Assume this method refreshes the panel where posters are displayed
+        this.revalidate();
+        this.repaint();
+    }
 
-
+    private UIUpdater uiUpdater;
     private static int userID = 0;
     private JButton btnGererBillets;
     private JButton btnGererClients;
@@ -57,6 +63,8 @@ public class PageAccueil implements ActionListener {
         this.offresDAO = offresDAO;
         this.scanner = scanner;
 
+
+
         String mail = clientDAO.trouverEmailParId(userID);
         new AcceuilVue(mail,userID,this);
     }
@@ -76,7 +84,7 @@ public class PageAccueil implements ActionListener {
                 new GererEmployesPage(employeDAO, clientDAO, filmDAO, seanceDAO, billetDAO, offresDAO, scanner, userID);
                 break;
             case "gerer_films":
-                new GererFilmsPage(filmDAO, clientDAO, employeDAO, seanceDAO, billetDAO, offresDAO, scanner, userID);
+                new GererFilmsPage(filmDAO, clientDAO, employeDAO, seanceDAO, billetDAO, offresDAO, scanner, userID, uiUpdater);
                 break;
             case "gerer_seances":
                 new GererSeancesPage(seanceDAO, clientDAO, filmDAO, employeDAO, billetDAO, offresDAO, scanner, userID);
@@ -132,6 +140,8 @@ public class PageAccueil implements ActionListener {
 
         return affiches;
     }
+
+
     public static JPanel createPosterPanel() {
         JPanel posterPanel = new JPanel(new BorderLayout()); // Utilisation d'un BorderLayout pour placer les boutons de navigation
         posterPanel.setBackground(Color.DARK_GRAY);
