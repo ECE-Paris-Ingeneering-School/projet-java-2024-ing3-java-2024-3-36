@@ -93,7 +93,44 @@ public class PageAccueil extends JFrame implements ActionListener {
         }
     }
 
+    public List GererAffiche(List<ImageIcon> affiches,List<String> titres){
+        FilmDAOImpl filmDAO = new FilmDAOImpl(); // Instancier votre DAO
 
+        // Récupérer les données d'image à partir de la méthode récupérerAfficheBytes() de votre DAO
+        List<byte[]> affichesBytes = filmDAO.recupererAfficheBytes();
+
+
+        // Parcourir la liste des données d'image
+        for (byte[] imageData : affichesBytes) {
+            if (imageData == null) {
+                continue;
+            }
+            try (ByteArrayInputStream bis = new ByteArrayInputStream(imageData)) {
+                Image image = ImageIO.read(bis);
+                if (image == null) {
+                    // Si l'image est nulle, passer à l'itération suivante sans ajouter d'image à la liste des affiches
+                    continue;
+                }
+                System.out.println("Conversion du BLOB en image réussie!");
+                // Ajouter l'image à la liste des affiches en tant qu'ImageIcon
+                int maxWidth = 800; // Définir la largeur maximale souhaitée
+                int maxHeight = 700; // Définir la hauteur maximale souhaitée
+                Image scaledImage = image.getScaledInstance(maxWidth, maxHeight, Image.SCALE_SMOOTH);
+                ImageIcon scaledIcon = new ImageIcon(scaledImage);
+
+                // Ajouter l'image redimensionnée à la liste des affiches en tant qu'ImageIcon
+                affiches.add(scaledIcon);
+                // Récupérer le titre du film correspondant à cette affiche
+                String titre = filmDAO.recupererTitreParIndex(affiches.size() - 1); // Supposons que vous ayez une méthode pour récupérer le titre par index dans votre DAO
+                titres.add(titre);
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.err.println("Erreur lors de la conversion du BLOB en image : " + e.getMessage());
+            }
+        }
+
+        return affiches;
+    }
     public static JPanel createPosterPanel() {
         JPanel posterPanel = new JPanel(new BorderLayout()); // Utilisation d'un BorderLayout pour placer les boutons de navigation
         posterPanel.setBackground(Color.DARK_GRAY);

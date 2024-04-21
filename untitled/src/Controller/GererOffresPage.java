@@ -1,6 +1,7 @@
 package Controller;
 
 import Modele.InterfaceDAO.*;
+import Vue.OffresVue;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,28 +37,7 @@ public class GererOffresPage extends JFrame implements ActionListener {
         this.scanner = scanner;
         this.userID = userID;
 
-        setTitle("Gérer les Offres");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(new GridLayout(4, 1));
-
-        btnOffreRegulier = createStyledButton("Modifier Offre Régulier");
-        btnOffreRegulier.addActionListener(this);
-        add(btnOffreRegulier);
-
-        btnOffreSenior = createStyledButton("Modifier Offre Senior");
-        btnOffreSenior.addActionListener(this);
-        add(btnOffreSenior);
-
-        btnOffreEnfant = createStyledButton("Modifier Offre Enfant");
-        btnOffreEnfant.addActionListener(this);
-        add(btnOffreEnfant);
-
-        btnRetour = createStyledButton("Retour au menu principal");
-        btnRetour.addActionListener(this);
-        add(btnRetour);
-
-        setSize(400, 400);
-        setVisible(true);
+        new OffresVue(this);
     }
 
     private JButton createStyledButton(String text) {
@@ -73,14 +53,23 @@ public class GererOffresPage extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == btnOffreRegulier) {
-            modifierOffre("régulier");
-        } else if (e.getSource() == btnOffreSenior) {
-            modifierOffre("sénior");
-        } else if (e.getSource() == btnOffreEnfant) {
-            modifierOffre("enfant");
-        } else if (e.getSource() == btnRetour) {
-            dispose(); //Ferme la fenêtre actuelle
+        String command = e.getActionCommand();
+        switch (command) {
+            case "Modifier Offre Régulier":
+                modifierOffre("régulier");
+                break;
+            case "Modifier Offre Senior":
+                modifierOffre("sénior");
+                break;
+            case "Modifier Offre Enfant":
+                modifierOffre("enfant");
+                break;
+            case "Retour au menu principal":
+                dispose(); // Ferme la fenêtre actuelle
+                break;
+            default:
+                System.out.println("Commande inconnue: " + command);
+                break;
         }
     }
 
