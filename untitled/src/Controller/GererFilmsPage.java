@@ -82,7 +82,7 @@ public  class GererFilmsPage extends JFrame implements ActionListener {
                     filmDAO.ajouterFilm(film);
                     JOptionPane.showMessageDialog(null, "Film ajouté avec succès.");
 
-                    
+
 
                     break;
 
