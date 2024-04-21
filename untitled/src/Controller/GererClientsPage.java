@@ -152,8 +152,4 @@ public class GererClientsPage extends JFrame implements ActionListener {
                 break;
         }
     }
-
-
-
-
 }

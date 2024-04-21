@@ -98,7 +98,7 @@ public class GererEmployesPage extends JFrame implements ActionListener {
                         data[i][1] = emp.getNom();
                         data[i][2] = emp.getPosition();
                         data[i][3] = emp.getEmail();
-                        data[i][4] = emp.getMotDePasse();  // Assuming it's okay to display passwords here
+                        data[i][4] = emp.getMotDePasse();
                     }
                     JTable table = new JTable(data, headers);
                     JScrollPane scrollPane = new JScrollPane(table);
@@ -149,7 +149,4 @@ public class GererEmployesPage extends JFrame implements ActionListener {
                 break;
         }
     }
-
-
-
 }

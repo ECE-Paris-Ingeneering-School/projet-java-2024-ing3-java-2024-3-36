@@ -180,5 +180,4 @@ public  class GererFilmsPage extends JFrame implements ActionListener {
         }
         return null;
     }
-
 }

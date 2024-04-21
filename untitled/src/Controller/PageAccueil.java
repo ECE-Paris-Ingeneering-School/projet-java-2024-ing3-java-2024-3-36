@@ -72,7 +72,6 @@ public class PageAccueil extends JFrame implements UIUpdater, ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
-        System.out.println("Action Command: " + command);
         switch (command) {
             case "gerer_billets":
                 new GererBilletsPage(billetDAO, clientDAO, filmDAO, employeDAO, seanceDAO, offresDAO, scanner, userID);
@@ -97,13 +96,12 @@ public class PageAccueil extends JFrame implements UIUpdater, ActionListener {
                 System.exit(0);
                 break;
             default:
-                System.out.println("Unknown action command: " + command);
                 break;
         }
     }
 
     public List GererAffiche(List<ImageIcon> affiches,List<String> titres){
-        FilmDAOImpl filmDAO = new FilmDAOImpl(); // Instancier votre DAO
+        FilmDAOImpl filmDAO = new FilmDAOImpl();
 
         // Récupérer les données d'image à partir de la méthode récupérerAfficheBytes() de votre DAO
         List<byte[]> affichesBytes = filmDAO.recupererAfficheBytes();
@@ -163,7 +161,7 @@ public class PageAccueil extends JFrame implements UIUpdater, ActionListener {
         centerPanel.setBackground(Color.DARK_GRAY);
         imagesPanel.add(centerPanel, BorderLayout.CENTER);
 
-        FilmDAOImpl filmDAO = new FilmDAOImpl(); // Instancier votre DAO
+        FilmDAOImpl filmDAO = new FilmDAOImpl();
 
         // Récupérer les données d'image à partir de la méthode récupérerAfficheBytes() de votre DAO
         List<byte[]> affichesBytes = filmDAO.recupererAfficheBytes();
