@@ -73,6 +73,7 @@ public class ClientsVue extends JFrame{
         add(btnRetour);
 
         setSize(400, 400);
+        setLocationRelativeTo(null); // Center the window
         setVisible(true);
 
     }
