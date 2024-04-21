@@ -70,6 +70,30 @@ public class BilletDAOImpl implements BilletDAO {
         }
         return billet;
     }
+    @Override
+    public List<Billet> listerBilletsParClientId(int clientId) throws Exception {
+        List<Billet> billets = new ArrayList<>();
+        String sql = "SELECT * FROM billets WHERE clientId = ?";
+
+        try (Connection connection = ConnectionDatabase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, clientId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                int seanceId = resultSet.getInt("seanceId");
+                int clientIdFromDB = resultSet.getInt("clientId");
+                double prix = resultSet.getDouble("prix");
+                String categorie = resultSet.getString("categorie");
+
+                Billet billet = new Billet(id, seanceId, clientIdFromDB, prix, categorie);
+                billets.add(billet);
+            }
+        }
+
+        return billets;
+    }
 
     @Override
     public List<Billet> listerTousLesBillets() throws Exception {

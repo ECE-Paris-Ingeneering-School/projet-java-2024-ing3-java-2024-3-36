@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.9.11
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : lun. 15 avr. 2024 à 13:40
--- Version du serveur : 8.0.36
--- Version de PHP : 7.4.33
+-- Généré le : mar. 26 mars 2024 à 13:58
+-- Version du serveur : 8.2.0
+-- Version de PHP : 8.2.13
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -59,6 +58,7 @@ CREATE TABLE IF NOT EXISTS `clients` (
   `nom` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `type` varchar(255) NOT NULL,
+    `motDePasse` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -90,6 +90,14 @@ INSERT INTO `employes` (`id`, `nom`, `position`, `email`, `motDePasse`) VALUES
 --
 -- Structure de la table `films`
 --
+CREATE TABLE IF NOT EXISTS `seances` (
+                                         `id` int NOT NULL AUTO_INCREMENT,
+                                         `filmId` int NOT NULL,
+                                         `heure` datetime NOT NULL,
+                                         `salle` varchar(255) NOT NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`filmId`) REFERENCES `films` (`id`)
+    ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 DROP TABLE IF EXISTS `films`;
 CREATE TABLE IF NOT EXISTS `films` (
@@ -102,29 +110,10 @@ CREATE TABLE IF NOT EXISTS `films` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Déchargement des données de la table `films`
---
 
 INSERT INTO `films` (`id`, `titre`, `genre`, `duree`, `description`, `realisateur`) VALUES
 (2, 'Le Seigneur des Anneaux', 'Fantaisie', 178, 'Un voyage inattendu.', 'Peter Jackson'),
 (3, 'aaaa', 'aa', 230, 'aaaaaa', 'eeeee');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `seances`
---
-
-DROP TABLE IF EXISTS `seances`;
-CREATE TABLE IF NOT EXISTS `seances` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `filmId` int NOT NULL,
-  `heure` datetime NOT NULL,
-  `salle` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `filmId` (`filmId`)
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

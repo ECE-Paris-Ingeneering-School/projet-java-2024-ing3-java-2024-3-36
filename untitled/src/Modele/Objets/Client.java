@@ -5,12 +5,14 @@ public class Client {
     private String nom;
     private String email;
     private String type;
+    private String motDePasse;
 
-    public Client(int id, String nom, String email, String type) {
+    public Client(int id, String nom, String email, String type, String motDePasse) {
         this.id = id;
         this.nom = nom;
         this.email = email;
         this.type = type;
+        this.motDePasse = motDePasse;
     }
 
     public int getId() {
@@ -23,6 +25,14 @@ public class Client {
 
     public String getNom() {
         return nom;
+    }
+
+    public String getMotDePasse(){
+        return motDePasse;
+    }
+
+    public void setMotDePasse(String motDePasse) {
+        this.motDePasse = motDePasse;
     }
 
     public void setNom(String nom) {
