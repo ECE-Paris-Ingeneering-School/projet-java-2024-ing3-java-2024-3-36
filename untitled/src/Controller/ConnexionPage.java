@@ -66,8 +66,8 @@ public class ConnexionPage extends JFrame implements ActionListener {
         String nom = JOptionPane.showInputDialog("Entrez votre nom:");
         String email = JOptionPane.showInputDialog("Entrez votre email:");
         String password = JOptionPane.showInputDialog("Entrez votre mot de passe:");
-        String type = "non membre"; // Default type
-        String etat = "null"; // Default state
+        String type = "non membre";
+        String etat = "null";
 
         if (!email.equals("admin@admin.fr")) {
             String[] options_type = {"non membre", "membre"};
