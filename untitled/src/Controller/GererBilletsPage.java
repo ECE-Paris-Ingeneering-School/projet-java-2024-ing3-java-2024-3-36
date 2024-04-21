@@ -1,6 +1,6 @@
 package Controller;
 
-import Modele.InterfaceDAO.BilletDAO;
+import Modele.InterfaceDAO.*;
 import Modele.Objets.Billet;
 import Modele.Objets.Film;
 import Modele.Objets.Seance;
@@ -16,9 +16,13 @@ import java.util.Scanner;
 
 public class GererBilletsPage extends JFrame implements ActionListener {
     private final int userID;
+    private ClientDAO clientDAO;
     private BilletDAO billetDAO;
     private Scanner scanner;
-
+    private FilmDAO filmDAO;
+    private EmployeDAO employeDAO;
+    private SeanceDAO seanceDAO;
+    private OffresDAO offresDAO;
     private JButton btnAjouterBillet;
 
     private JButton btnListerBillets;
@@ -26,9 +30,26 @@ public class GererBilletsPage extends JFrame implements ActionListener {
     private JButton btnSupprimerBillet;
     private JButton btnRetour;
 
-    public GererBilletsPage(BilletDAO billetDAO, Scanner scanner, int userID) {
+    private static JButton createStyledButton(String text) {
+        JButton button = new JButton(text);
+        button.setBackground(new Color(255, 215, 0)); // Couleur bleu foncé
+        button.setForeground(Color.WHITE); // Couleur du texte blanc
+        button.setFocusPainted(false); // Suppression de la bordure autour du texte lorsqu'on clique sur le bouton
+        button.setPreferredSize(new Dimension(200, 100)); // Dimensions du bouton (largeur, hauteur)
+        button.setFont(new Font("Arial", Font.BOLD, 16)); // Police du texte
+        button.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        return button;
+    }
+
+    public GererBilletsPage(BilletDAO billetDAO, ClientDAO clientDAO, FilmDAO filmDAO, EmployeDAO employeDAO, SeanceDAO seanceDAO, OffresDAO offresDAO, Scanner scanner, int userID) {
         this.userID = userID;
+
+        this.clientDAO = clientDAO;
+        this.filmDAO = filmDAO;
+        this.employeDAO = employeDAO;
+        this.seanceDAO = seanceDAO;
         this.billetDAO = billetDAO;
+        this.offresDAO = offresDAO;
         this.scanner = scanner;
 
         setTitle("Gérer Mes billets");
@@ -65,7 +86,7 @@ public class GererBilletsPage extends JFrame implements ActionListener {
         if (e.getSource() == btnAjouterBillet) {
             System.out.println("");
 
-            java.util.List<Seance> seances = null;
+            List<Seance> seances = null;
             try {
                 seances = seanceDAO.listerToutesLesSeances();
             } catch (Exception ex) {
@@ -220,7 +241,7 @@ public class GererBilletsPage extends JFrame implements ActionListener {
 
         else if (e.getSource() == btnListerBillets) {
             // Lister tous les billets de l'utilisateur courant (userID)
-            java.util.List<Billet> billets = null;
+            List<Billet> billets = null;
             try {
                 billets = billetDAO.listerBilletsParClientId(userID);
             } catch (Exception ex) {

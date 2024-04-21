@@ -40,7 +40,7 @@ public class GererClientsPage extends JFrame implements ActionListener {
 
 
 
-    public GererClientsPage(ClientDAO clientDAO, Scanner scanner, int userID) {
+    public GererClientsPage(ClientDAO clientDAO, BilletDAO billetDAO, FilmDAO filmDAO, EmployeDAO employeDAO, SeanceDAO seanceDAO, OffresDAO offresDAO, Scanner scanner, int userID) {
         this.clientDAO = clientDAO;
         this.scanner = scanner;
 

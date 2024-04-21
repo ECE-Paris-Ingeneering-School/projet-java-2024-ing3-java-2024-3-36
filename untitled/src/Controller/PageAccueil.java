@@ -53,8 +53,17 @@ public class PageAccueil extends JFrame implements ActionListener {
     private BilletDAO billetDAO;
     private OffresDAO offresDAO;
 
+    private Scanner scanner;
+
     public PageAccueil(int userID, ClientDAO clientDAO, FilmDAO filmDAO, EmployeDAO employeDAO, SeanceDAO seanceDAO, BilletDAO billetDAO, OffresDAO offresDAO, Scanner scanner) throws Exception {
         this.userID = userID;
+        this.clientDAO = clientDAO;
+        this.filmDAO = filmDAO;
+        this.employeDAO = employeDAO;
+        this.seanceDAO = seanceDAO;
+        this.billetDAO = billetDAO;
+        this.offresDAO = offresDAO;
+        this.scanner = scanner;
         setTitle("Page d'Accueil");
         String mail = clientDAO.trouverEmailParId(userID);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -545,17 +554,17 @@ public class PageAccueil extends JFrame implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnGererBillets) {
-            new Controller.GererBilletsPage(billetDAO, scanner, userID);
+            new GererBilletsPage(billetDAO, clientDAO, filmDAO, employeDAO, seanceDAO, offresDAO, scanner, userID);
         } else if (e.getSource() == btnGererClients) {
-            new GererClientsPage(clientDAO, scanner, userID);
+            new GererClientsPage(clientDAO, billetDAO, filmDAO, employeDAO, seanceDAO, offresDAO, scanner, userID);
         } else if (e.getSource() == btnGererEmployes) {
-            new Controller.GererEmployesPage(employeDAO, scanner, userID);
+            new GererEmployesPage(employeDAO, clientDAO, filmDAO, seanceDAO, billetDAO, offresDAO, scanner, userID);
         } else if (e.getSource() == btnGererFilms) {
-            new Controller.GererFilmsPage(filmDAO, scanner, userID);
+            new GererFilmsPage(filmDAO, clientDAO, employeDAO, seanceDAO, billetDAO, offresDAO, scanner, userID);
         } else if (e.getSource() == btnGererSeances) {
-            new Controller.GererSeancesPage(seanceDAO, scanner, userID);
+            new GererSeancesPage(seanceDAO, clientDAO, filmDAO, employeDAO, billetDAO, offresDAO, scanner, userID);
         } else if (e.getSource() == btnOffres) {
-            new Controller.GererOffresPage(offresDAO, scanner, userID);
+            new GererOffresPage(offresDAO, clientDAO, filmDAO, employeDAO, seanceDAO, billetDAO, scanner, userID);
         } else if (e.getSource() == btnQuitter) {
             System.out.println("Au revoir !");
             System.exit(0);
