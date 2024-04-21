@@ -12,6 +12,7 @@ import java.util.Scanner;
 
 import Modele.Objets.Film;
 import Utils.*;
+import Vue.ClientsVue;
 
 
 public class GererClientsPage extends JFrame implements ActionListener {
@@ -44,72 +45,26 @@ public class GererClientsPage extends JFrame implements ActionListener {
         this.clientDAO = clientDAO;
         this.scanner = scanner;
 
-        setTitle("Gérer les clients");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(new GridLayout(6, 1));
+        new ClientsVue(this);
 
-        btnAjouterClient = createStyledButton("Ajouter un client");
-        btnAjouterClient.addActionListener(this);
-        add(btnAjouterClient);
-
-        btnTrouverClient = createStyledButton("Trouver un client par ID");
-        btnTrouverClient.addActionListener(this);
-        add(btnTrouverClient);
-
-        btnListerClients = createStyledButton("Lister tous les clients");
-        btnListerClients.addActionListener(this);
-        add(btnListerClients);
-
-        btnMettreAJourClient = createStyledButton("Mettre à jour un client");
-        btnMettreAJourClient.addActionListener(this);
-        add(btnMettreAJourClient);
-
-        btnSupprimerClient = createStyledButton("Supprimer un client");
-        btnSupprimerClient.addActionListener(this);
-        add(btnSupprimerClient);
-
-        btnRetour = createStyledButton("Retour au menu principal");
-        btnRetour.addActionListener(this);
-        add(btnRetour);
-
-        setSize(400, 400);
-        setVisible(true);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnAjouterClient) {
-            // Ajouter un client
             String nom = JOptionPane.showInputDialog("Entrez le nom du client : ");
             String email = JOptionPane.showInputDialog("Entrez l'email du client : ");
-
             String[] options_type = {"non membre", "membre"};
-            String type = (String) JOptionPane.showInputDialog(
-                    null,
-                    "Sélectionnez le type de compte: :",
-                    "Choix de type",
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    options_type,
-                    options_type[0]);
-
+            String type = (String) JOptionPane.showInputDialog(null, "Sélectionnez le type de compte:", "Choix de type", JOptionPane.QUESTION_MESSAGE, null, options_type, options_type[0]);
             String etat = "null";
-
-            if(type=="membre") {
+            if("membre".equals(type)) {
                 String[] options = {"régulier", "sénior", "enfant"};
-                etat = (String) JOptionPane.showInputDialog(
-                        null,
-                        "Sélectionnez la catégorie de compte :",
-                        "Choix de catégorie",
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        options,
-                        options[0]);
-            }
-            else {
+                etat = (String) JOptionPane.showInputDialog(null, "Sélectionnez la catégorie de compte :", "Choix de catégorie", JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+            } else {
                 etat = "null";
             }
-            String motDePasse = JOptionPane.showInputDialog(("Entrez votre mot de passe"));
-            Client client = new Client(10, nom, email, type, motDePasse, etat);
+            String motDePasse = JOptionPane.showInputDialog("Entrez votre mot de passe");
+            Client client = new Client(0, nom, email, type, motDePasse, etat);
             try {
                 clientDAO.ajouterClient(client);
                 JOptionPane.showMessageDialog(null, "Client ajouté avec succès.");
@@ -117,7 +72,6 @@ public class GererClientsPage extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(null, "Une erreur est survenue : " + ex.getMessage());
             }
         } else if (e.getSource() == btnTrouverClient) {
-            // Trouver un client par ID
             int id = Integer.parseInt(JOptionPane.showInputDialog("Entrez l'ID du client : "));
             Client client = null;
             try {
@@ -127,7 +81,6 @@ public class GererClientsPage extends JFrame implements ActionListener {
             }
             JOptionPane.showMessageDialog(null, client != null ? client.toString() : "Client non trouvé.");
         } else if (e.getSource() == btnListerClients) {
-            // Lister tous les clients
             List<Client> clients = null;
             try {
                 clients = clientDAO.listerTousLesClients();
@@ -137,10 +90,8 @@ public class GererClientsPage extends JFrame implements ActionListener {
             if (clients.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Aucun client disponible.");
             } else {
-                // Création d'un modèle de tableau pour afficher les clients dans une JTable
                 String[] entetes = {"ID", "Nom", "Email", "Type", "Mot de Passe"};
                 Object[][] donnees = new Object[clients.size()][5];
-
                 for (int i = 0; i < clients.size(); i++) {
                     Client client = clients.get(i);
                     donnees[i][0] = client.getId();
@@ -149,15 +100,11 @@ public class GererClientsPage extends JFrame implements ActionListener {
                     donnees[i][3] = client.getType();
                     donnees[i][4] = client.getMotDePasse();
                 }
-
                 JTable table = new JTable(donnees, entetes);
-                table.setDefaultEditor(Object.class, null); // Désactiver l'édition de la table
                 JScrollPane scrollPane = new JScrollPane(table);
                 JOptionPane.showMessageDialog(null, scrollPane, "Liste des clients", JOptionPane.PLAIN_MESSAGE);
             }
-        }
-        else if (e.getSource() == btnMettreAJourClient) {
-            // Mettre à jour un client
+        } else if (e.getSource() == btnMettreAJourClient) {
             int id = Integer.parseInt(JOptionPane.showInputDialog("Entrez l'ID du client à mettre à jour : "));
             Client client = null;
             try {
@@ -165,26 +112,25 @@ public class GererClientsPage extends JFrame implements ActionListener {
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
-            if (client == null) {
-                JOptionPane.showMessageDialog(null, "Client non trouvé.");
-            } else {
+            if (client != null) {
                 String nouveauNom = JOptionPane.showInputDialog("Entrez le nouveau nom du client : ");
                 String nouvelEmail = JOptionPane.showInputDialog("Entrez le nouvel email du client : ");
                 String nouveauType = JOptionPane.showInputDialog("Entrez le nouveau type du client : ");
-                String nouveauMdp = JOptionPane.showInputDialog("Entrez le nouveau Mot de passe du client : ");
+                String nouveauMotDePasse = JOptionPane.showInputDialog("Entrez le nouveau Mot de passe du client : ");
                 client.setNom(nouveauNom);
                 client.setEmail(nouvelEmail);
                 client.setType(nouveauType);
-                client.setType(nouveauMdp);
+                client.setMotDePasse(nouveauMotDePasse);
                 try {
                     clientDAO.mettreAJourClient(client);
                     JOptionPane.showMessageDialog(null, "Client mis à jour avec succès.");
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Une erreur est survenue : " + ex.getMessage());
                 }
+            } else {
+                JOptionPane.showMessageDialog(null, "Client non trouvé.");
             }
         } else if (e.getSource() == btnSupprimerClient) {
-            // Supprimer un client
             int idSuppression = Integer.parseInt(JOptionPane.showInputDialog("Entrez l'ID du client à supprimer : "));
             try {
                 clientDAO.supprimerClient(idSuppression);
@@ -196,6 +142,7 @@ public class GererClientsPage extends JFrame implements ActionListener {
             dispose();
         }
     }
+
 
 
 }
