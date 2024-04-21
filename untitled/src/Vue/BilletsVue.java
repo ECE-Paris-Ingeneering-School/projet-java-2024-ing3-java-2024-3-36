@@ -1,3 +1,5 @@
+package Vue;
+
 import Modele.InterfaceDAO.*;
 
 import javax.swing.*;

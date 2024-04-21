@@ -14,7 +14,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
 import java.util.Scanner;
-
+import Vue.BilletsVue;
 public class GererBilletsPage extends JFrame implements ActionListener {
     private final int userID;
     private ClientDAO clientDAO;
