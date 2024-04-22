@@ -36,7 +36,7 @@ public class PaymentVue extends JFrame{
         button.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         return button;
     }
-    public PaymentVue() {
+    public PaymentVue(double prixAPayer) {
 
 
         setTitle("Fausse Page de Paiement");

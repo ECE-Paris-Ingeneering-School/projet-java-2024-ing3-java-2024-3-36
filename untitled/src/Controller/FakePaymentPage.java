@@ -18,10 +18,8 @@ public  class FakePaymentPage extends JFrame{
     public FakePaymentPage(double prixAPayer) {
         this.prixAPayer = prixAPayer;
 
-        new PaymentVue();
+        new PaymentVue(prixAPayer);
     }
-
-
 
     public boolean isPaymentSuccessful() {
         return paymentSuccessful;
