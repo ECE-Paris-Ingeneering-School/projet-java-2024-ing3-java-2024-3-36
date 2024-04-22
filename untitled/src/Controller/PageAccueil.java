@@ -18,6 +18,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -226,6 +227,14 @@ public class PageAccueil extends JFrame implements UIUpdater, ActionListener {
                     public void mouseClicked(MouseEvent e) {
                         // Récupérer l'index de l'affiche cliquée
                         int selectedIndex = affiches.indexOf(posterLabel.getIcon());
+                        String titreFilm = titres.get(selectedIndex);
+                        String descriptionFilm;
+                        try {
+                            descriptionFilm = filmDAO.recupererDescriptionParTitre(titreFilm);
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(null, "Erreur lors de la récupération de la description du film: " + ex.getMessage());
+                            return;
+                        }
                         // Récupérer l'ID du film associé à cette affiche
                         int selectedFilmId = 0;
                         try {
@@ -246,8 +255,8 @@ public class PageAccueil extends JFrame implements UIUpdater, ActionListener {
                             JOptionPane.showMessageDialog(null, "Aucune séance disponible pour ce film.");
                         } else {
                             // Création d'un modèle de tableau pour afficher les séances dans une JTable
-                            String[] entetes = {"ID", "Film", "Date et heure", "Salle", "Prix"};
-                            Object[][] donnees = new Object[seances.size()][5];
+                            String[] entetes = {"ID", "Film", "Date et heure", "Salle", "Prix", "Durée"};
+                            Object[][] donnees = new Object[seances.size()][6];
                             final double[] prix = {8};
                             double reduction = 0;
 
@@ -302,6 +311,11 @@ public class PageAccueil extends JFrame implements UIUpdater, ActionListener {
                                     prix[0] = 16 - 16*(reduction/100);
                                 }
                                 donnees[i][4] = prix[0];
+                                try {
+                                    donnees[i][5] = filmDAO.recupererDureeParTitre(titreFilm);
+                                } catch (SQLException ex) {
+                                    throw new RuntimeException(ex);
+                                }
                             }
 
                             String url_ba;
@@ -355,6 +369,30 @@ public class PageAccueil extends JFrame implements UIUpdater, ActionListener {
                                 panel.add(scrollPane, BorderLayout.WEST);
                                 panel.add(fxPanel, BorderLayout.CENTER);
 
+                                // Création de la JTextArea pour la description avec une police plus grande
+                                JTextArea descriptionArea = new JTextArea("Description du film :\n" + descriptionFilm);
+                                descriptionArea.setFont(new Font("SansSerif", Font.PLAIN, 16)); // Définir la police
+                                descriptionArea.setWrapStyleWord(true);
+                                descriptionArea.setLineWrap(true);
+                                descriptionArea.setEditable(false);
+                                descriptionArea.setOpaque(false);
+
+                                // Utiliser un JScrollPane pour la JTextArea pour gérer les longues descriptions
+                                JScrollPane descriptionScrollPane = new JScrollPane(descriptionArea);
+                                descriptionScrollPane.setBorder(null); // Enlever les bordures pour plus de clarté
+                                descriptionScrollPane.setOpaque(false);
+                                descriptionScrollPane.getViewport().setOpaque(false);
+
+                                // Ajouter la JTextArea au JPanel sous le JScrollPane du tableau
+                                JPanel descriptionPanel = new JPanel(new BorderLayout());
+                                descriptionPanel.add(descriptionScrollPane, BorderLayout.CENTER);
+
+                                // Mettre à jour le panneau contenant le tableau et la description
+                                panel.add(descriptionPanel, BorderLayout.SOUTH);
+
+                                // Mettre à jour l'affichage
+                                frame.validate();
+                                frame.repaint();
                                 // Afficher la fenêtre Swing
                                 frame.setVisible(true);
                             });

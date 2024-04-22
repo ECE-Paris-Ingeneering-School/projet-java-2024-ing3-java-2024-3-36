@@ -60,6 +60,36 @@ public class FilmDAOImpl implements FilmDAO {
         return filmId;
     }
 
+    public int recupererDureeParTitre(String titre) throws SQLException {
+        String sql = "SELECT duree FROM films WHERE titre = ?";
+        int duree = 0;
+        try (Connection connection = ConnectionDatabase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, titre);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                duree = resultSet.getInt("duree");
+            }
+        } catch (SQLException e) {
+            printSQLException(e);
+        }
+        return duree;
+    }
+    public String recupererDescriptionParTitre(String titre) throws SQLException {
+        String sql = "SELECT description FROM films WHERE titre = ?";
+        String description = "";
+        try (Connection connection = ConnectionDatabase.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, titre);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                description = resultSet.getString("description");
+            }
+        } catch (SQLException e) {
+            printSQLException(e);
+        }
+        return description;
+    }
     @Override
     public String recupererTitreParIndex(int index) {
         String titre = null;
